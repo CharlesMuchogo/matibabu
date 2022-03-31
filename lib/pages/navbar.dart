@@ -1,82 +1,94 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 import 'package:matibabu/pages/history.dart';
 import 'package:matibabu/pages/home.dart';
 import 'package:matibabu/pages/profile.dart';
 import 'package:matibabu/pages/search.dart';
 
-class navigation extends StatefulWidget {
+class BottomBarScreen extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _BottomBarScreenState createState() => _BottomBarScreenState();
 }
 
-class _HomePageState extends State<navigation> {
-  int pageIndex = 0;
+class _BottomBarScreenState extends State<BottomBarScreen> {
+  List<Map<String, Widget>> _pages = [];
+  int _selectedPageIndex = 0;
 
-  final pages = [
-    home(),
-    history(),
-    search(),
-    profile(),
-  ];
+  @override
+  void initState() {
+    _pages = [
+      {
+        'page': home(),
+      },
+      {
+        'page': search(),
+      },
+      {
+        'page': history(),
+      },
+      {
+        'page': profile(),
+      },
+    ];
+    super.initState();
+  }
+
+  void _selectPage(int index) {
+    setState(() {
+      _selectedPageIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              children: [
-                IconButton(
-                  enableFeedback: false,
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.home,
-                    color: Colors.white,
-                    size: 35,
+        body: _pages[_selectedPageIndex]['page'],
+        bottomNavigationBar: BottomAppBar(
+          // color: Colors.white,
+          shape: CircularNotchedRectangle(),
+          notchMargin: 0.01,
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            height: kBottomNavigationBarHeight * 0.98,
+            // color: Colors.green,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.grey,
+                    width: 0.5,
                   ),
                 ),
-              ],
-            ),
-            IconButton(
-              enableFeedback: false,
-              onPressed: () {},
-              icon: const Icon(
-                Icons.search,
-                color: Colors.white,
-                size: 35,
+              ),
+              child: BottomNavigationBar(
+                onTap: _selectPage,
+                backgroundColor: Colors.green,
+                unselectedItemColor: Colors.black,
+                selectedItemColor: Colors.purple,
+                currentIndex: _selectedPageIndex,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Home'.toString(),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.search),
+                    label: 'search'.toString(),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.medical_services),
+                    label: 'History'.toString(),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person_outline),
+                    label: 'Profile'.toString(),
+                  ),
+                ],
               ),
             ),
-            IconButton(
-              enableFeedback: false,
-              onPressed: () {},
-              icon: const Icon(
-                Icons.medical_services,
-                color: Colors.white,
-                size: 35,
-              ),
-            ),
-            IconButton(
-              enableFeedback: false,
-              onPressed: () {},
-              icon: const Icon(
-                Icons.person_outline,
-                color: Colors.white,
-                size: 35,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

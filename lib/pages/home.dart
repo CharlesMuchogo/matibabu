@@ -14,7 +14,7 @@ class _homeState extends State<home> {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 21, 121, 91),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 210, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
         child: ListView(
           children: [
             Container(
@@ -129,9 +129,9 @@ Widget info() {
               itemBuilder: (context, index) => Card(
                 elevation: 10,
                 child: Container(
-                  height: 160,
+                  height: 200,
                   width: 300,
-                  margin: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(5),
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
