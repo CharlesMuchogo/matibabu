@@ -12,7 +12,7 @@ class _homeState extends State<home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 21, 121, 91),
+      backgroundColor: Color.fromRGBO(43, 147, 128, 20),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
         child: ListView(

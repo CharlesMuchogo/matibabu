@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:matibabu/GlobalComponents/colors.dart';
 import 'package:matibabu/pages/history.dart';
 import 'package:matibabu/pages/home.dart';
 import 'package:matibabu/pages/profile.dart';
@@ -22,7 +23,7 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
         'page': home(),
       },
       {
-        'page': search(),
+        'page': Search(),
       },
       {
         'page': history(),
@@ -43,52 +44,54 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _pages[_selectedPageIndex]['page'],
-        bottomNavigationBar: BottomAppBar(
-          // color: Colors.white,
-          shape: CircularNotchedRectangle(),
-          notchMargin: 0.01,
-          clipBehavior: Clip.antiAlias,
+      body: _pages[_selectedPageIndex]['page'],
+      bottomNavigationBar: BottomAppBar(
+        color: jungleGreen,
+        shape: CircularNotchedRectangle(),
+        notchMargin: 0.01,
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          color: Colors.green,
+          height: kBottomNavigationBarHeight * 0.98,
           child: Container(
-            height: kBottomNavigationBarHeight * 0.98,
-            // color: Colors.green,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.grey,
-                    width: 0.5,
-                  ),
+            decoration: BoxDecoration(
+              color: jungleGreen,
+              border: Border(
+                top: BorderSide(
+                  color: Colors.grey,
+                  width: 0.5,
                 ),
               ),
-              child: BottomNavigationBar(
-                onTap: _selectPage,
-                backgroundColor: Colors.green,
-                unselectedItemColor: Colors.black,
-                selectedItemColor: Colors.purple,
-                currentIndex: _selectedPageIndex,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home'.toString(),
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.search),
-                    label: 'search'.toString(),
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.medical_services),
-                    label: 'History'.toString(),
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person_outline),
-                    label: 'Profile'.toString(),
-                  ),
-                ],
-              ),
+            ),
+            child: BottomNavigationBar(
+              backgroundColor: Colors.green,
+              onTap: _selectPage,
+              //backgroundColor: Colors.green,
+              unselectedItemColor: Colors.black,
+              selectedItemColor: Colors.purple,
+              currentIndex: _selectedPageIndex,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search),
+                  label: 'search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.medical_services),
+                  label: 'History',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person_outline),
+                  label: 'Profile',
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

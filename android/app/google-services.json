@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "394375340543",
+    "project_id": "matibabu-1254d",
+    "storage_bucket": "matibabu-1254d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394375340543:android:14af1cc340a507153647ca",
+        "android_client_info": {
+          "package_name": "com.example.matibabu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394375340543-u0kdr9eed2csib0k9rr5soqg2a7slrsi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.matibabu",
+            "certificate_hash": "f52dcd4aed8d4851dde3baa60d2e46bf58a3944b"
+          }
+        },
+        {
+          "client_id": "394375340543-66dha4nikgbspmlbt0uscrfn69kkf62h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcfvLGRoOhLYNhxnQp8YcF4nGdQao4El8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "394375340543-66dha4nikgbspmlbt0uscrfn69kkf62h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
