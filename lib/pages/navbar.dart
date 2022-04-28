@@ -46,47 +46,47 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
     return Scaffold(
       body: _pages[_selectedPageIndex]['page'],
       bottomNavigationBar: BottomAppBar(
-        color: jungleGreen,
+        //color: Color.fromRGBO(43, 147, 128, 20),
         shape: CircularNotchedRectangle(),
         notchMargin: 0.01,
         clipBehavior: Clip.antiAlias,
         child: Container(
-          color: Colors.green,
+          //color: Color.fromRGBO(43, 147, 128, 20),
           height: kBottomNavigationBarHeight * 0.98,
           child: Container(
             decoration: BoxDecoration(
               color: jungleGreen,
               border: Border(
                 top: BorderSide(
-                  color: Colors.grey,
+                  //color: Color.fromRGBO(43, 147, 128, 20),
                   width: 0.5,
                 ),
               ),
             ),
             child: BottomNavigationBar(
-              backgroundColor: Colors.green,
+              //backgroundColor: Color.fromRGBO(43, 147, 128, 20),
               onTap: _selectPage,
               //backgroundColor: Colors.green,
               unselectedItemColor: Colors.black,
-              selectedItemColor: Colors.purple,
+              selectedItemColor: Colors.white,
               currentIndex: _selectedPageIndex,
               items: [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                    backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.search),
-                  label: 'search',
-                ),
+                    icon: Icon(Icons.search),
+                    label: 'search',
+                    backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.medical_services),
-                  label: 'History',
-                ),
+                    icon: Icon(Icons.medical_services),
+                    label: 'History',
+                    backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline),
-                  label: 'Profile',
-                ),
+                    icon: Icon(Icons.person_outline),
+                    label: 'Profile',
+                    backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
               ],
             ),
           ),

@@ -33,7 +33,8 @@ class _profileState extends State<profile> {
       child: Column(
         children: [
           CircleAvatar(
-            backgroundImage: AssetImage('assets/images/profile.jpg'),
+            backgroundImage: NetworkImage(
+                "https://static.wbsc.org/assets/cms/0a5ee9d0-b95c-5dc8-ae0e-4e7c1f2550b8.jpg"),
             radius: 70.0,
           ),
           SizedBox(
@@ -46,7 +47,10 @@ class _profileState extends State<profile> {
           ),
           Text(
             "User Information",
-            style: TextStyle(fontSize: 18, color: Colors.green),
+            style: TextStyle(
+                fontSize: 20,
+                color: Color.fromRGBO(43, 147, 128, 20),
+                fontWeight: FontWeight.bold),
           ),
           Divider(
             color: Colors.black,
@@ -134,7 +138,9 @@ class _profileState extends State<profile> {
           Text(
             "User Settings",
             style: TextStyle(
-                fontSize: 18, color: Color.fromRGBO(43, 147, 128, 20)),
+                fontSize: 20,
+                color: Color.fromRGBO(43, 147, 128, 20),
+                fontWeight: FontWeight.bold),
           ),
           Divider(
             color: Colors.black,
