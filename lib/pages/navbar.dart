@@ -46,27 +46,22 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
     return Scaffold(
       body: _pages[_selectedPageIndex]['page'],
       bottomNavigationBar: BottomAppBar(
-        //color: Color.fromRGBO(43, 147, 128, 20),
         shape: CircularNotchedRectangle(),
         notchMargin: 0.01,
         clipBehavior: Clip.antiAlias,
         child: Container(
-          //color: Color.fromRGBO(43, 147, 128, 20),
           height: kBottomNavigationBarHeight * 0.98,
           child: Container(
             decoration: BoxDecoration(
               color: jungleGreen,
               border: Border(
                 top: BorderSide(
-                  //color: Color.fromRGBO(43, 147, 128, 20),
                   width: 0.5,
                 ),
               ),
             ),
             child: BottomNavigationBar(
-              //backgroundColor: Color.fromRGBO(43, 147, 128, 20),
               onTap: _selectPage,
-              //backgroundColor: Colors.green,
               unselectedItemColor: Colors.black,
               selectedItemColor: Colors.white,
               currentIndex: _selectedPageIndex,

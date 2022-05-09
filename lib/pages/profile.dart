@@ -34,7 +34,7 @@ class _profileState extends State<profile> {
         children: [
           CircleAvatar(
             backgroundImage: NetworkImage(
-                "https://static.wbsc.org/assets/cms/0a5ee9d0-b95c-5dc8-ae0e-4e7c1f2550b8.jpg"),
+                "https://firebasestorage.googleapis.com/v0/b/matibabu-1254d.appspot.com/o/profile.jpg?alt=media&token=f989bf89-8c13-485b-b5ef-8b7013da0413"),
             radius: 70.0,
           ),
           SizedBox(
@@ -59,81 +59,12 @@ class _profileState extends State<profile> {
           SizedBox(
             height: 28,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Icon(Icons.email_outlined),
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Email",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    "muindilencer@gmail.com",
-                    style: TextStyle(fontSize: 18),
-                  )
-                ],
-              )
-            ],
-          ),
-          SizedBox(height: 27),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Icon(Icons.location_on_outlined),
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Address",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    "Maasai Lodge - Ongata Rongai",
-                    style: TextStyle(fontSize: 18),
-                  )
-                ],
-              )
-            ],
-          ),
-          SizedBox(
-            height: 28,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Icon(Icons.phone),
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Phone number",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    "0758896593",
-                    style: TextStyle(fontSize: 18),
-                  )
-                ],
-              )
-            ],
-          ),
-          SizedBox(
-            height: 27,
+          UserInfo("Email", "Muchpaul2@gmail.com", Icons.email_outlined),
+          UserInfo("Address", "Maasai Lodge", Icons.location_on_outlined),
+          UserInfo(
+            "Phone Number",
+            "0758896593",
+            Icons.phone,
           ),
           Text(
             "User Settings",
@@ -169,9 +100,42 @@ class _profileState extends State<profile> {
                 inactiveTrackColor: Colors.white,
               )
             ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Icon(
+                Icons.logout_outlined,
+                size: 30,
+              ),
+              Text(
+                "Logout",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              )
+            ],
           )
         ],
       ),
     );
   }
+}
+
+Widget UserInfo(String title, String subTitle, IconData icondata) {
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
+      child: ListTile(
+        onTap: (() {}),
+        leading: Icon(icondata),
+        title: Text(title),
+        subtitle: Text(subTitle),
+      ),
+    ),
+  );
 }

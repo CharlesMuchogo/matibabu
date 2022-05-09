@@ -1,62 +1,103 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:matibabu/GlobalComponents/colors.dart';
+import 'package:matibabu/pages/doctor_information.dart';
 
 class home extends StatefulWidget {
   @override
   State<home> createState() => _homeState();
 }
 
+String greeting() {
+  var hour = DateTime.now().hour;
+  if (hour < 12) {
+    return 'Good Morning';
+  }
+  if (hour < 17) {
+    return 'Good Afternoon';
+  }
+  return 'Good Evening';
+}
+
 class _homeState extends State<home> {
+  String Time = greeting();
+  String name = 'Lencer';
   @override
   Widget build(BuildContext context) {
+    double heightOfDevice = MediaQuery.of(context).size.height;
+    double heightofgreatings = (heightOfDevice / 8);
     return Scaffold(
       backgroundColor: Color.fromRGBO(43, 147, 128, 20),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
-        child: ListView(
-          children: [
-            Container(
-              decoration: new BoxDecoration(
-                color: Colors.white,
-                borderRadius: new BorderRadius.only(
-                  topLeft: const Radius.circular(30.0),
-                  topRight: const Radius.circular(30.0),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 33,
-                  ),
-                  textInfo('upcoming appointments'),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  info(),
-                  SizedBox(
-                    height: 33,
-                  ),
-                  textInfo('My favorite doctors'),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  info(),
-                  SizedBox(
-                    height: 33,
-                  ),
-                  textInfo('Top ratted specialist'),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  info(),
-                ],
+      body: Column(
+        children: [
+          Container(
+            height: heightOfDevice / 4,
+            width: double.infinity,
+            color: Color.fromRGBO(43, 147, 128, 20),
+            child: Center(
+              child: Text(
+                Time + " " + name,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold),
               ),
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Container(
+                  decoration: new BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: new BorderRadius.only(
+                      topLeft: const Radius.circular(30.0),
+                      topRight: const Radius.circular(30.0),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 33,
+                      ),
+                      textInfo('upcoming appointments'),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      info(),
+                      SizedBox(
+                        height: 33,
+                      ),
+                      textInfo('My favorite doctors'),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DoctorInfo()),
+                            );
+                          },
+                          child: info()),
+                      SizedBox(
+                        height: 33,
+                      ),
+                      textInfo('Top ratted specialist'),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      info(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -75,7 +116,7 @@ Widget textInfo(String text) {
   );
 }
 
-Widget infocards() {
+Widget infocards(BuildContext context) {
   return Container(
     height: 160,
     width: 300,
