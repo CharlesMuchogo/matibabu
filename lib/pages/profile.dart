@@ -77,49 +77,28 @@ class _profileState extends State<profile> {
             color: Colors.black,
             thickness: 1,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Icon(
-                Icons.dark_mode,
-                size: 30,
-              ),
-              Text(
-                "Dark Mode",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Switch(
-                onChanged: toggleSwitch,
-                value: isSwitched,
-                activeColor: Colors.black,
-                activeTrackColor: Colors.black54,
-                inactiveThumbColor: Colors.white54,
-                inactiveTrackColor: Colors.white,
-              )
-            ],
+          ListTile(
+            leading: Icon(
+              Icons.dark_mode,
+              size: 30,
+            ),
+            title: Text('Dark Mode'),
+            trailing: Switch(
+              onChanged: toggleSwitch,
+              value: isSwitched,
+              activeColor: Colors.black,
+              activeTrackColor: Colors.black54,
+              inactiveThumbColor: Colors.white54,
+              inactiveTrackColor: Colors.white,
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Icon(
-                Icons.logout_outlined,
-                size: 30,
-              ),
-              Text(
-                "Logout",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(
-                width: 10,
-              )
-            ],
-          )
+          ListTile(
+            leading: Icon(
+              Icons.logout_outlined,
+              size: 30,
+            ),
+            title: Text('Logout'),
+          ),
         ],
       ),
     );

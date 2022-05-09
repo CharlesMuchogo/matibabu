@@ -72,7 +72,7 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
                     backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.search),
-                    label: 'search',
+                    label: 'Search',
                     backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.medical_services),

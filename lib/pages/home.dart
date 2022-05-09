@@ -62,7 +62,7 @@ class _homeState extends State<home> {
                       SizedBox(
                         height: 33,
                       ),
-                      textInfo('upcoming appointments'),
+                      textInfo('Upcoming appointments'),
                       SizedBox(
                         height: 10,
                       ),
