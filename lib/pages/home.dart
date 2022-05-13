@@ -8,24 +8,28 @@ class home extends StatefulWidget {
   State<home> createState() => _homeState();
 }
 
-String greeting() {
-  var hour = DateTime.now().hour;
-  if (hour < 12) {
-    return 'Good Morning';
-  }
-  if (hour < 17) {
-    return 'Good Afternoon';
-  }
-  return 'Good Evening';
-}
-
 class _homeState extends State<home> {
-  String Time = greeting();
+  var hour;
+
+  String greeting() {
+    setState(() {
+      hour = DateTime.now().hour;
+    });
+
+    if (hour < 12) {
+      return 'Good Morning';
+    }
+    if (hour < 17) {
+      return 'Good Afternoon';
+    }
+    return 'Good Evening';
+  }
+
   String name = 'Lencer';
   @override
   Widget build(BuildContext context) {
     double heightOfDevice = MediaQuery.of(context).size.height;
-    double heightofgreatings = (heightOfDevice / 8);
+
     return Scaffold(
       backgroundColor: Color.fromRGBO(43, 147, 128, 20),
       body: Column(
@@ -36,7 +40,7 @@ class _homeState extends State<home> {
             color: Color.fromRGBO(43, 147, 128, 20),
             child: Center(
               child: Text(
-                Time + " " + name,
+                greeting() + " " + name,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -116,50 +120,6 @@ Widget textInfo(String text) {
   );
 }
 
-Widget infocards(BuildContext context) {
-  return Container(
-    height: 160,
-    width: 300,
-    child: SingleChildScrollView(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/images/profile.jpg'),
-            radius: 32.0,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                "Dr. Steve Burke",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                ),
-              ),
-              Text(
-                "25/03/2022",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 21, 121, 91),
-                  fontSize: 15,
-                ),
-              ),
-            ],
-          ),
-          Text(
-            "...",
-            style: TextStyle(
-                color: Color.fromARGB(255, 21, 121, 91),
-                fontSize: 28,
-                fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 Widget info() {
   return Container(
     child: SingleChildScrollView(
@@ -189,48 +149,41 @@ Widget info() {
                   ],
                 ),
                 child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      CircleAvatar(
-                        backgroundImage:
-                            AssetImage('assets/images/profile.jpg'),
-                        radius: 32.0,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            "Dr. Steve Burke",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            "25/03/2022",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 21, 121, 91),
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        "...",
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 21, 121, 91),
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+                  child: infocards("Charles Muchogo",
+                      'assets/images/profile.jpg', "Gaenacologist"),
                 ),
               ),
             ),
           ),
         ],
       ),
+    ),
+  );
+}
+
+Widget infocards(String name, String displayPhoto, String doctorSpecialty) {
+  return ListTile(
+    leading: CircleAvatar(
+      backgroundImage: AssetImage(displayPhoto),
+      radius: 32.0,
+    ),
+    title: Text(
+      name,
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 18,
+      ),
+    ),
+    subtitle: Text(
+      doctorSpecialty,
+      style: TextStyle(
+        color: Color.fromARGB(255, 21, 121, 91),
+        fontSize: 15,
+      ),
+    ),
+    trailing: Icon(
+      Icons.more_vert,
+      color: Color.fromARGB(255, 21, 121, 91),
     ),
   );
 }

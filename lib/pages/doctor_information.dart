@@ -25,6 +25,15 @@ class DoctorInfo extends StatelessWidget {
 
 Widget doctor_info_body(BuildContext context) {
   double heightOfDevice = MediaQuery.of(context).size.height;
+  String doctorDescription =
+      "I have 23 years of experience workin as a dentist."
+      "I have worked in various famous hospitals such as "
+      "Nairobi hospital"
+      "Aga Khan Hospital"
+      "Karen hospital "
+      "Right now I’m the head of Dentistry department in"
+      "Kenyatta National Hospital."
+      "Feel free to contact me to book an appointment.  ";
   return Column(
     children: [
       Container(
@@ -32,7 +41,7 @@ Widget doctor_info_body(BuildContext context) {
         width: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            fit: BoxFit.fill,
+            fit: BoxFit.cover,
             image: NetworkImage(
                 "https://firebasestorage.googleapis.com/v0/b/matibabu-1254d.appspot.com/o/doctor_image.jpeg?alt=media&token=b4c09479-454b-44a4-8686-3d47239c86c3"),
           ),
@@ -40,6 +49,9 @@ Widget doctor_info_body(BuildContext context) {
       ),
       Container(
         color: Colors.white,
+        child: Column(
+          children: [Text(doctorDescription)],
+        ),
       ),
     ],
   );
