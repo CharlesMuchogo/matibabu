@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class profile extends StatefulWidget {
@@ -8,6 +9,7 @@ class profile extends StatefulWidget {
 }
 
 class _profileState extends State<profile> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   String name = 'Lencer Muindi';
 
   bool isSwitched = false;
@@ -23,6 +25,14 @@ class _profileState extends State<profile> {
       setState(() {
         isSwitched = false;
       });
+    }
+  }
+
+  void signOut() async {
+    try {
+      _auth.signOut();
+    } on FirebaseAuth catch (e) {
+      print(e);
     }
   }
 
@@ -93,9 +103,12 @@ class _profileState extends State<profile> {
             ),
           ),
           ListTile(
-            leading: Icon(
-              Icons.logout_outlined,
-              size: 30,
+            leading: InkWell(
+              onTap: signOut,
+              child: Icon(
+                Icons.logout_outlined,
+                size: 30,
+              ),
             ),
             title: Text('Logout'),
           ),
