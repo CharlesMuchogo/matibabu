@@ -107,6 +107,7 @@ class _profileState extends State<profile> {
               onTap: signOut,
               child: Icon(
                 Icons.logout_outlined,
+                color: Colors.black,
                 size: 30,
               ),
             ),

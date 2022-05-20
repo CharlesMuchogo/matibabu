@@ -5,7 +5,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:matibabu/GlobalComponents/authenticationservice.dart';
+import 'package:matibabu/GlobalComponents/authenticationservice.dart';
+import 'package:matibabu/GlobalComponents/restapi.dart';
+import 'package:matibabu/pages/login.dart';
 import 'package:provider/provider.dart';
+
+import '../GlobalComponents/authenticationservice.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -23,13 +28,20 @@ class _SignupState extends State<Signup> {
     TextEditingController emailcontroler = TextEditingController();
     TextEditingController phoneNumbercontroler = TextEditingController();
     TextEditingController passwordcontroler = TextEditingController();
+    double heightOfDevice = MediaQuery.of(context).size.height;
 
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-
-    void _input() {
-      context.read<AuthenticationService>().signUp(
+    void _input() async {
+      await context.read<AuthenticationService>().signUp(
           email: emailcontroler.text.toLowerCase().trim(),
           password: passwordcontroler.text.trim());
+
+      RestApi rest = RestApi();
+
+      await rest.createData(
+          firstNamecontroler.text.trim(),
+          lastNamecontroler.text.trim(),
+          emailcontroler.text.trim(),
+          phoneNumbercontroler.text);
 
       return Navigator.of(context).pop();
     }
@@ -52,50 +64,82 @@ class _SignupState extends State<Signup> {
               );
             }
 
-            return Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          textfields(
-                              firstNamecontroler, "Enter your first name"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          textfields(lastNamecontroler, "Enter your last name"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          textfields(emailcontroler, "Enter your email"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          textfields(
-                              phoneNumbercontroler, "Enter phone number"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          textfields(passwordcontroler, "Create password"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          ElevatedButton(
-                            onPressed: _input,
-                            child: Text("Sign up"),
-                            style: ElevatedButton.styleFrom(
-                                primary: Color.fromRGBO(43, 147, 128, 20)),
-                          )
-                        ],
-                      ),
-                    ),
+            return Column(
+              children: [
+                Container(
+                  height: heightOfDevice * 0.25,
+                  width: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      logo("Matibabu", 32, Color.fromRGBO(43, 147, 128, 20)),
+                      logo("Health Is Wealth", 15, Colors.black)
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Container(
+                                padding: EdgeInsets.all(20),
+                                child: Column(
+                                  children: [
+                                    textfields(firstNamecontroler,
+                                        "Enter your first name"),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    textfields(lastNamecontroler,
+                                        "Enter your last name"),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    textfields(
+                                        emailcontroler, "Enter your email"),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    textfields(phoneNumbercontroler,
+                                        "Enter phone number"),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    textfields(
+                                        passwordcontroler, "Create password"),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    SizedBox(
+                                      height: 42,
+                                      width: 196,
+                                      child: ElevatedButton(
+                                        onPressed: _input,
+                                        child: Text("Sign up"),
+                                        style: ElevatedButton.styleFrom(
+                                            primary: Color.fromRGBO(
+                                                43, 147, 128, 20)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             );
           }),
     );

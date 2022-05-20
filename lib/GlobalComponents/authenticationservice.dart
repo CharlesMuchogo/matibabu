@@ -5,11 +5,13 @@ class AuthenticationService {
   AuthenticationService(this._auth);
 
   Stream<User?> get authstateChanges => _auth.authStateChanges();
+  User? get userid => _auth.currentUser;
 
   Future<String> signIn(
       {required String email, required String password}) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
+
       return 'Sign in successful';
     } on FirebaseAuth catch (e) {
       return e.toString();

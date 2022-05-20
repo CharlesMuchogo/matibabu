@@ -34,42 +34,37 @@ class _loginState extends State<login> {
     String errors = '';
     return Scaffold(
       body: FutureBuilder<Object>(
-          future: null,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Material(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Material(
-                child: Center(
-                  child: Text("Error Occured. Reaload the application"),
-                ),
-              );
-            }
+        future: null,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Material(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Material(
+              child: Center(
+                child: Text("Error Occured. Reaload the application"),
+              ),
+            );
+          } else {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   height: heightOfDevice * 0.25,
                   width: double.infinity,
-                  child: Center(
-                    child: ListTile(
-                      title: Text(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      logo(
                         "Matibabu",
-                        style: TextStyle(
-                          fontSize: 30,
-                        ),
+                        32,
+                        Color.fromRGBO(43, 147, 128, 20),
                       ),
-                      subtitle: Text(
-                        "Health is Wealth",
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
+                      logo("Health Is Wealth", 17, Colors.black)
+                    ],
                   ),
                 ),
                 Padding(
@@ -138,7 +133,9 @@ class _loginState extends State<login> {
                 ),
               ],
             );
-          }),
+          }
+        },
+      ),
     );
   }
 }
@@ -200,4 +197,11 @@ Widget textfields(
       ),
     );
   }
+}
+
+Widget logo(String logocomponent, double fontsize, Color textcolor) {
+  return Text(
+    logocomponent,
+    style: TextStyle(color: textcolor, fontSize: fontsize, letterSpacing: 1.5),
+  );
 }

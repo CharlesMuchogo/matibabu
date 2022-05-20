@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:matibabu/GlobalComponents/colors.dart';
 import 'package:matibabu/pages/doctor_information.dart';
 
 class home extends StatefulWidget {
@@ -10,6 +11,9 @@ class home extends StatefulWidget {
 
 class _homeState extends State<home> {
   var hour;
+  ApplicationColors colo = ApplicationColors();
+
+  //final Color matibabuGreen = colo.appcolor();
 
   String greeting() {
     setState(() {
