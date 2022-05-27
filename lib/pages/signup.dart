@@ -1,11 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:matibabu/GlobalComponents/authenticationservice.dart';
-import 'package:matibabu/GlobalComponents/authenticationservice.dart';
+
 import 'package:matibabu/GlobalComponents/restapi.dart';
 import 'package:matibabu/pages/login.dart';
 import 'package:provider/provider.dart';
@@ -28,9 +27,16 @@ class _SignupState extends State<Signup> {
     TextEditingController emailcontroler = TextEditingController();
     TextEditingController phoneNumbercontroler = TextEditingController();
     TextEditingController passwordcontroler = TextEditingController();
+    TextEditingController confirmpasswordcontroler = TextEditingController();
+    String error;
     double heightOfDevice = MediaQuery.of(context).size.height;
+    bool _isLoading = false;
 
     void _input() async {
+      if (passwordcontroler.text.trim() !=
+          confirmpasswordcontroler.text.trim()) {
+        error = "Passwords do not match";
+      }
       await context.read<AuthenticationService>().signUp(
           email: emailcontroler.text.toLowerCase().trim(),
           password: passwordcontroler.text.trim());
@@ -51,6 +57,9 @@ class _SignupState extends State<Signup> {
           future: null,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
+              setState(() {
+                _isLoading = true;
+              });
               return MaterialApp(
                 home: Scaffold(
                   body: Center(child: CircularProgressIndicator()),
@@ -110,8 +119,13 @@ class _SignupState extends State<Signup> {
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    textfields(
+                                    passwordFields(
                                         passwordcontroler, "Create password"),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    passwordFields(confirmpasswordcontroler,
+                                        "Confirm password"),
                                     SizedBox(
                                       height: 10,
                                     ),
@@ -121,13 +135,15 @@ class _SignupState extends State<Signup> {
                                     SizedBox(
                                       height: 42,
                                       width: 196,
-                                      child: ElevatedButton(
-                                        onPressed: _input,
-                                        child: Text("Sign up"),
-                                        style: ElevatedButton.styleFrom(
-                                            primary: Color.fromRGBO(
-                                                43, 147, 128, 20)),
-                                      ),
+                                      child: _isLoading
+                                          ? CircularProgressIndicator()
+                                          : ElevatedButton(
+                                              onPressed: _input,
+                                              child: Text("Sign up"),
+                                              style: ElevatedButton.styleFrom(
+                                                  primary: Color.fromRGBO(
+                                                      43, 147, 128, 20)),
+                                            ),
                                     )
                                   ],
                                 ),
@@ -152,6 +168,40 @@ Widget textfields(
 ) {
   return TextFormField(
     controller: textfieldcontroler,
+
+    // ignore: prefer_const_constructors
+    decoration: InputDecoration(
+      labelText: placeholder,
+      //hintText: placeholder
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        borderSide: BorderSide(color: Color.fromRGBO(43, 147, 128, 20)),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        borderSide: BorderSide(
+          color: Colors.black,
+          width: 1.5,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Colors.black45,
+          width: 1.5,
+        ),
+      ),
+    ),
+  );
+}
+
+Widget passwordFields(
+  TextEditingController textfieldcontroler,
+  String placeholder,
+) {
+  return TextFormField(
+    controller: textfieldcontroler,
+    obscureText: true,
 
     // ignore: prefer_const_constructors
     decoration: InputDecoration(

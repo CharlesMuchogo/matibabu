@@ -1,16 +1,7 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:matibabu/GlobalComponents/authenticationservice.dart';
 
 class RestApi {
-  //String firstName;
-  //String lastName;
-  //String email;
-  //String phoneNumber;
-  //RestApi(this.firstName, this.lastName, this.email, this.phoneNumber);
-
   final FirebaseFirestore _fire = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -29,5 +20,21 @@ class RestApi {
       },
     );
     return "Signup successful";
+  }
+
+  Future<void> readData() async {
+    final User? _user = _auth.currentUser;
+    final _uid = _user?.uid;
+    var userDetailsList = [];
+
+    final DocumentSnapshot docs =
+        await _fire.collection("Patient").doc(_uid).get();
+
+    String name = docs.get("Email");
+    String phoneNumber = docs.get("Phone Number");
+
+    userDetailsList.add({"Email": name, "Phone Number": phoneNumber});
+
+    return userDetailsList[0];
   }
 }

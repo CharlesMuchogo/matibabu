@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new, prefer_const_literals_to_create_immutables
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:matibabu/GlobalComponents/colors.dart';
 import 'package:matibabu/pages/doctor_information.dart';
@@ -10,26 +12,8 @@ class home extends StatefulWidget {
 }
 
 class _homeState extends State<home> {
-  var hour;
   ApplicationColors colo = ApplicationColors();
 
-  //final Color matibabuGreen = colo.appcolor();
-
-  String greeting() {
-    setState(() {
-      hour = DateTime.now().hour;
-    });
-
-    if (hour < 12) {
-      return 'Good Morning';
-    }
-    if (hour < 17) {
-      return 'Good Afternoon';
-    }
-    return 'Good Evening';
-  }
-
-  String name = 'Lencer';
   @override
   Widget build(BuildContext context) {
     double heightOfDevice = MediaQuery.of(context).size.height;
@@ -38,20 +22,49 @@ class _homeState extends State<home> {
       backgroundColor: Color.fromRGBO(43, 147, 128, 20),
       body: Column(
         children: [
-          Container(
-            height: heightOfDevice / 4,
-            width: double.infinity,
-            color: Color.fromRGBO(43, 147, 128, 20),
-            child: Center(
-              child: Text(
-                greeting() + " " + name,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
+          StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection("Patient")
+                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                  .snapshots(),
+              builder: (context,
+                  AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
+                      snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (snapshot.hasError) {}
+
+                var hour = DateTime.now().hour;
+                String greeting() {
+                  hour = DateTime.now().hour;
+
+                  if (hour < 12) {
+                    return 'Good Morning';
+                  }
+                  if (hour < 17) {
+                    return 'Good Afternoon';
+                  }
+                  return 'Good Evening';
+                }
+
+                return Container(
+                  height: heightOfDevice / 4,
+                  width: double.infinity,
+                  color: Color.fromRGBO(43, 147, 128, 20),
+                  child: Center(
+                    child: Text(
+                      greeting() + " " + snapshot.data?.get("First Name"),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              }),
           Expanded(
             child: ListView(
               shrinkWrap: true,
@@ -74,7 +87,7 @@ class _homeState extends State<home> {
                       SizedBox(
                         height: 10,
                       ),
-                      info(),
+                      upcomingAppointments(),
                       SizedBox(
                         height: 33,
                       ),
@@ -188,6 +201,47 @@ Widget infocards(String name, String displayPhoto, String doctorSpecialty) {
     trailing: Icon(
       Icons.more_vert,
       color: Color.fromARGB(255, 21, 121, 91),
+    ),
+  );
+}
+
+Widget upcomingAppointments() {
+  return Container(
+    child: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 150,
+            child: ListView.builder(
+              itemCount: 10,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => Container(
+                height: 200,
+                width: 300,
+                margin: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5),
+                  ),
+                  color: Color.fromRGBO(245, 242, 242, 20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      offset: Offset(0.0, 1.0), //(x,y)
+                      blurRadius: 6.0,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: infocards("DR Charles Muchogo",
+                      'assets/images/profile.jpg', "01/06/2022"),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }
