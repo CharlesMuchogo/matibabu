@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:matibabu/GlobalComponents/colors.dart';
+import 'package:matibabu/pages/appointment.dart';
 import 'package:matibabu/pages/doctor_information.dart';
 
 class home extends StatefulWidget {
@@ -87,7 +88,16 @@ class _homeState extends State<home> {
                       SizedBox(
                         height: 10,
                       ),
-                      upcomingAppointments(),
+                      InkWell(
+                        child: upcomingAppointments(),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AppointmentPage()),
+                          );
+                        },
+                      ),
                       SizedBox(
                         height: 33,
                       ),
