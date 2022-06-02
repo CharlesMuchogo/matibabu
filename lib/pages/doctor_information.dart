@@ -90,6 +90,9 @@ Widget doctor_info_body(
                         MaterialPageRoute(builder: (context) => BookingsPage()),
                       )),
                   child: Text("Book Appointment"),
+                  style: ElevatedButton.styleFrom(
+                    primary: Color.fromRGBO(43, 147, 128, 20),
+                  ),
                 ),
               ),
             ),
@@ -107,7 +110,10 @@ Widget doctor_info_body(
               title: Text("muchpaul2@gmail.com"),
             ),
             ListTile(
-              leading: Icon(Icons.whatsapp_outlined),
+              leading: Icon(
+                Icons.whatsapp_outlined,
+                color: Colors.green,
+              ),
               title: Text("+254758896593"),
             )
           ],

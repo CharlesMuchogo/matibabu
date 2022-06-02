@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 
 class RestApi {
   final FirebaseFirestore _fire = FirebaseFirestore.instance;
@@ -36,5 +39,24 @@ class RestApi {
     userDetailsList.add({"Email": name, "Phone Number": phoneNumber});
 
     return userDetailsList[0];
+  }
+
+  Future<String> bookAppointment(
+    String specialty,
+    String time,
+    String date,
+  ) async {
+    final User? _user = _auth.currentUser;
+    final _uid = _user?.uid;
+
+    await _fire.collection("Appointments").doc().set(
+      {
+        "Patient Id": _uid,
+        "Date": date,
+        "Time": time,
+        "Consultation": specialty,
+      },
+    );
+    return "You have booked successfully";
   }
 }

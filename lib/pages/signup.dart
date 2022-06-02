@@ -28,15 +28,11 @@ class _SignupState extends State<Signup> {
     TextEditingController phoneNumbercontroler = TextEditingController();
     TextEditingController passwordcontroler = TextEditingController();
     TextEditingController confirmpasswordcontroler = TextEditingController();
-    String error;
+
     double heightOfDevice = MediaQuery.of(context).size.height;
     bool _isLoading = false;
 
     void _input() async {
-      if (passwordcontroler.text.trim() !=
-          confirmpasswordcontroler.text.trim()) {
-        error = "Passwords do not match";
-      }
       await context.read<AuthenticationService>().signUp(
           email: emailcontroler.text.toLowerCase().trim(),
           password: passwordcontroler.text.trim());
@@ -75,7 +71,7 @@ class _SignupState extends State<Signup> {
 
             return Column(
               children: [
-                Container(
+                SizedBox(
                   height: heightOfDevice * 0.25,
                   width: double.infinity,
                   child: Column(

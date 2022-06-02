@@ -18,6 +18,9 @@ class _homeState extends State<home> {
   @override
   Widget build(BuildContext context) {
     double heightOfDevice = MediaQuery.of(context).size.height;
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final User? _user = _auth.currentUser;
+    final _uid = _user?.uid;
 
     return Scaffold(
       backgroundColor: Color.fromRGBO(43, 147, 128, 20),
@@ -26,7 +29,7 @@ class _homeState extends State<home> {
           StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection("Patient")
-                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                  .doc(_uid)
                   .snapshots(),
               builder: (context,
                   AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
@@ -89,7 +92,7 @@ class _homeState extends State<home> {
                         height: 10,
                       ),
                       InkWell(
-                        child: upcomingAppointments(),
+                        child: upcomingAppointments(_uid!),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -215,43 +218,82 @@ Widget infocards(String name, String displayPhoto, String doctorSpecialty) {
   );
 }
 
-Widget upcomingAppointments() {
-  return Container(
-    child: SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 150,
-            child: ListView.builder(
-              itemCount: 10,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => Container(
-                height: 200,
-                width: 300,
-                margin: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5),
-                  ),
-                  color: Color.fromRGBO(245, 242, 242, 20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(0.0, 1.0), //(x,y)
-                      blurRadius: 6.0,
+Widget upcomingAppointments(String userId) {
+  return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection("Appointments").snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData) {
+          return Text("You have no upcomming appointments");
+        }
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  itemCount: snapshot.data?.size,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) => Container(
+                    height: 200,
+                    width: 300,
+                    margin: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5),
+                      ),
+                      color: Color.fromRGBO(245, 242, 242, 20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0),
+                          blurRadius: 6.0,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: infocards("DR Charles Muchogo",
-                      'assets/images/profile.jpg', "01/06/2022"),
+                    child: Center(
+                      child: appointmentcards(
+                        snapshot.data?.docs[index]["Date"],
+                        'assets/images/profile.jpg',
+                        snapshot.data?.docs[index]["Consultation"],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        );
+      });
+}
+
+Widget appointmentcards(
+  String dateOfAppointment,
+  String displayPhoto,
+  String doctorSpecialty,
+) {
+  return ListTile(
+    leading: CircleAvatar(
+      backgroundImage: AssetImage(displayPhoto),
+      radius: 32.0,
+    ),
+    title: Text(
+      dateOfAppointment,
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 18,
       ),
+    ),
+    subtitle: Text(
+      doctorSpecialty,
+      style: TextStyle(
+        color: Color.fromARGB(255, 21, 121, 91),
+        fontSize: 15,
+      ),
+    ),
+    trailing: Icon(
+      Icons.more_vert,
+      color: Color.fromARGB(255, 21, 121, 91),
     ),
   );
 }

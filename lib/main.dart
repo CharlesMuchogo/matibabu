@@ -26,6 +26,11 @@ Future<void> main() async {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: AuthenticationWrapper(),
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.green,
+          ),
+        ),
       ),
     ),
   );
