@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
 
@@ -6,16 +6,16 @@ import 'package:internationalization/internationalization.dart';
 import 'package:matibabu/GlobalComponents/restapi.dart';
 
 class BookingsPage extends StatefulWidget {
-  const BookingsPage({Key? key}) : super(key: key);
-
   @override
   State<BookingsPage> createState() => _BookingsPageState();
+  final String address;
+  const BookingsPage(this.address);
 }
 
 String _selectedDate = "";
 String formatedTime = "";
 String error = "Please fill in the details";
-bool detailsAreEmpty = false;
+bool formfilled = true;
 
 class _BookingsPageState extends State<BookingsPage> {
   Future<void> _openDatePicker(BuildContext context) async {
@@ -57,16 +57,17 @@ class _BookingsPageState extends State<BookingsPage> {
     if ((formatedTime.isEmpty) || (_selectedDate.isEmpty)) {
       setState(
         () {
-          detailsAreEmpty = true;
+          formfilled = false;
         },
       );
     } else {
-      RestApi restObject = RestApi();
-      restObject.bookAppointment(_dropdownValue, formatedTime, _selectedDate);
-
       setState(() {
-        detailsAreEmpty = false;
+        formfilled = false;
       });
+
+      RestApi restObject = RestApi();
+      restObject.bookAppointment(
+          _dropdownValue, formatedTime, _selectedDate, widget.address);
 
       final snackBar = SnackBar(
         content: const Text('Your Appointment was booked successfully!'),
@@ -95,7 +96,7 @@ class _BookingsPageState extends State<BookingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Book An Appointment"),
-        backgroundColor: Color.fromRGBO(43, 147, 128, 20),
+        backgroundColor: Colors.teal,
         centerTitle: true,
       ),
       body: Column(
@@ -104,18 +105,16 @@ class _BookingsPageState extends State<BookingsPage> {
           SizedBox(
             height: (MediaQuery.of(context).size.height * 0.15),
             child: Center(
-              child: detailsAreEmpty
-                  ? Text(
+              child: formfilled
+                  ? Text("")
+                  : Text(
                       error,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    )
-                  : Text(""),
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
             ),
-          ),
-          Text(
-            error,
-            style: TextStyle(color: Colors.red, fontSize: 18),
           ),
           ListTile(
             leading: IconButton(

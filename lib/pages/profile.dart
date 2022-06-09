@@ -91,7 +91,7 @@ class _profileState extends State<profile> {
                   "User Information",
                   style: TextStyle(
                       fontSize: 20,
-                      color: Color.fromRGBO(43, 147, 128, 20),
+                      color: Colors.teal,
                       fontWeight: FontWeight.bold),
                 ),
                 Divider(
@@ -113,7 +113,7 @@ class _profileState extends State<profile> {
                   "User Settings",
                   style: TextStyle(
                       fontSize: 20,
-                      color: Color.fromRGBO(43, 147, 128, 20),
+                      color: Colors.teal,
                       fontWeight: FontWeight.bold),
                 ),
                 Divider(

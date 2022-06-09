@@ -60,26 +60,27 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
             ),
             child: BottomNavigationBar(
               onTap: _selectPage,
-              unselectedItemColor: Colors.black,
+              unselectedItemColor: Colors.grey[300],
+              unselectedFontSize: 14,
               selectedItemColor: Colors.white,
               currentIndex: _selectedPageIndex,
               items: [
                 BottomNavigationBarItem(
                     icon: Icon(Icons.home),
                     label: 'Home',
-                    backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
+                    backgroundColor: Colors.teal),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.search),
                     label: 'Search',
-                    backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
+                    backgroundColor: Colors.teal),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.medical_services),
                     label: 'History',
-                    backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
+                    backgroundColor: Colors.teal),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.person_outline),
-                    label: 'Profile',
-                    backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
+                    label: "Profile",
+                    backgroundColor: Colors.teal),
               ],
             ),
           ),

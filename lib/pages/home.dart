@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:matibabu/GlobalComponents/colors.dart';
+
 import 'package:matibabu/pages/appointment.dart';
 import 'package:matibabu/pages/doctor_information.dart';
 
@@ -13,8 +13,6 @@ class home extends StatefulWidget {
 }
 
 class _homeState extends State<home> {
-  ApplicationColors colo = ApplicationColors();
-
   @override
   Widget build(BuildContext context) {
     double heightOfDevice = MediaQuery.of(context).size.height;
@@ -23,7 +21,7 @@ class _homeState extends State<home> {
     final _uid = _user?.uid;
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(43, 147, 128, 20),
+      backgroundColor: Colors.teal,
       body: Column(
         children: [
           StreamBuilder(
@@ -57,7 +55,7 @@ class _homeState extends State<home> {
                 return Container(
                   height: heightOfDevice / 4,
                   width: double.infinity,
-                  color: Color.fromRGBO(43, 147, 128, 20),
+                  color: Colors.teal,
                   child: Center(
                     child: Text(
                       greeting() + " " + snapshot.data?.get("First Name"),
@@ -91,16 +89,7 @@ class _homeState extends State<home> {
                       SizedBox(
                         height: 10,
                       ),
-                      InkWell(
-                        child: upcomingAppointments(_uid!),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AppointmentPage()),
-                          );
-                        },
-                      ),
+                      upcomingAppointments(_uid!),
                       SizedBox(
                         height: 33,
                       ),
@@ -108,15 +97,7 @@ class _homeState extends State<home> {
                       SizedBox(
                         height: 10,
                       ),
-                      InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DoctorInfo()),
-                            );
-                          },
-                          child: info()),
+                      doctorInfoCard(),
                       SizedBox(
                         height: 33,
                       ),
@@ -124,7 +105,7 @@ class _homeState extends State<home> {
                       SizedBox(
                         height: 10,
                       ),
-                      info(),
+                      doctorInfoCard(),
                     ],
                   ),
                 ),
@@ -143,88 +124,136 @@ Widget textInfo(String text) {
     child: Text(
       text,
       style: TextStyle(
-          color: Color.fromRGBO(43, 147, 128, 20),
-          fontSize: 25,
-          fontWeight: FontWeight.bold),
+          color: Colors.teal, fontSize: 25, fontWeight: FontWeight.bold),
     ),
   );
 }
 
-Widget info() {
-  return Container(
-    child: SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 150,
-            child: ListView.builder(
-              itemCount: 10,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => Container(
-                height: 200,
-                width: 300,
-                margin: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5),
-                  ),
-                  color: Color.fromRGBO(245, 242, 242, 20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(0.0, 1.0), //(x,y)
-                      blurRadius: 6.0,
+Widget doctorInfoCard() {
+  return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection("Doctor").snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData) {
+          return CircularProgressIndicator();
+        }
+        if (snapshot.hasError) {
+          return Text("An error occured. please try again later");
+        }
+
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) => Container(
+                    height: 200,
+                    width: 300,
+                    margin: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5),
+                      ),
+                      color: Color.fromRGBO(245, 242, 242, 20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0), //(x,y)
+                          blurRadius: 6.0,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: infocards("Charles Muchogo",
-                      'assets/images/profile.jpg', "Gaenacologist"),
+                    child: Center(
+                      child: infocards(
+                          context,
+                          ("Dr. " +
+                              snapshot.data!.docs[index].get("First Name") +
+                              " " +
+                              snapshot.data!.docs[index].get("First Name")),
+                          'assets/images/profile.jpg',
+                          snapshot.data!.docs[index].get("specialty")),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        );
+      });
 }
 
-Widget infocards(String name, String displayPhoto, String doctorSpecialty) {
-  return ListTile(
-    leading: CircleAvatar(
-      backgroundImage: AssetImage(displayPhoto),
-      radius: 32.0,
-    ),
-    title: Text(
-      name,
-      style: TextStyle(
-        color: Colors.black,
-        fontSize: 18,
+Widget infocards(BuildContext context, String name, String displayPhoto,
+    String doctorSpecialty) {
+  return InkWell(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DoctorInfo(name, doctorSpecialty)),
+      ); // navigate to Appointments page
+    },
+    child: ListTile(
+      leading: CircleAvatar(
+        backgroundImage: AssetImage(displayPhoto),
+        radius: 32.0,
       ),
-    ),
-    subtitle: Text(
-      doctorSpecialty,
-      style: TextStyle(
+      title: Text(
+        name,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18,
+        ),
+      ),
+      subtitle: Text(
+        doctorSpecialty,
+        style: TextStyle(
+          color: Color.fromARGB(255, 21, 121, 91),
+          fontSize: 15,
+        ),
+      ),
+      trailing: Icon(
+        Icons.more_vert,
         color: Color.fromARGB(255, 21, 121, 91),
-        fontSize: 15,
       ),
-    ),
-    trailing: Icon(
-      Icons.more_vert,
-      color: Color.fromARGB(255, 21, 121, 91),
     ),
   );
 }
 
-Widget upcomingAppointments(String userId) {
+Widget upcomingAppointments(String _uid) {
   return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("Appointments").snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection("Appointments")
+          .orderBy("Date")
+          .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
-          return Text("You have no upcomming appointments");
+          return Container(
+            height: 200,
+            width: 300,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
+        if (snapshot.hasError) {
+          return Text("Oops. An error occured. Try again later");
+        }
+        if (snapshot.data!.size <= 0) {
+          return SizedBox(
+            height: 150,
+            width: 300,
+            child: Center(
+              child: Text(
+                "You have no upcomming appointments",
+                style: TextStyle(fontSize: 17),
+              ),
+            ),
+          );
+        }
+
         return SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -253,9 +282,12 @@ Widget upcomingAppointments(String userId) {
                     ),
                     child: Center(
                       child: appointmentcards(
-                        snapshot.data?.docs[index]["Date"],
-                        'assets/images/profile.jpg',
-                        snapshot.data?.docs[index]["Consultation"],
+                        context,
+                        snapshot.data!.docs[index]["Time"],
+                        snapshot.data!.docs[index]["Address"],
+                        snapshot.data!.docs[index].id,
+                        snapshot.data!.docs[index]["Date"],
+                        snapshot.data!.docs[index]["Consultation"],
                       ),
                     ),
                   ),
@@ -268,32 +300,66 @@ Widget upcomingAppointments(String userId) {
 }
 
 Widget appointmentcards(
+  BuildContext context,
+  String time,
+  String address,
+  String patientId,
   String dateOfAppointment,
-  String displayPhoto,
-  String doctorSpecialty,
+  String consultation,
 ) {
   return ListTile(
-    leading: CircleAvatar(
-      backgroundImage: AssetImage(displayPhoto),
-      radius: 32.0,
+    leading: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          dateOfAppointment,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+          ),
+        ),
+      ],
     ),
-    title: Text(
-      dateOfAppointment,
-      style: TextStyle(
-        color: Colors.black,
-        fontSize: 18,
-      ),
+
+    title: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          time,
+          style: TextStyle(
+            color: Colors.teal,
+            fontSize: 18,
+          ),
+        ),
+        SizedBox(
+          height: 15,
+        ),
+        Text(
+          address,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+          ),
+        ),
+      ],
     ),
-    subtitle: Text(
-      doctorSpecialty,
-      style: TextStyle(
+    // subtitle: ,
+    trailing: InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AppointmentPage(
+                    patientId,
+                    dateOfAppointment,
+                    consultation,
+                  )),
+        ); // navigate to Appointments page
+      },
+      child: Icon(
+        Icons.more_vert,
         color: Color.fromARGB(255, 21, 121, 91),
-        fontSize: 15,
       ),
-    ),
-    trailing: Icon(
-      Icons.more_vert,
-      color: Color.fromARGB(255, 21, 121, 91),
     ),
   );
 }

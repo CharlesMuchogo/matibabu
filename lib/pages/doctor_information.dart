@@ -1,10 +1,13 @@
-// ignore_for_file: unnecessary_new, prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: unnecessary_new, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:matibabu/pages/bookingpage.dart';
 
 class DoctorInfo extends StatelessWidget {
-  const DoctorInfo({Key? key}) : super(key: key);
+  final String doctorName;
+  final String doctorSpecialty;
+
+  DoctorInfo(this.doctorName, this.doctorSpecialty);
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +16,11 @@ class DoctorInfo extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Dr Steve Burke",
+          doctorName,
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(43, 147, 128, 20),
+        backgroundColor: Colors.teal,
       ),
       body: doctor_info_body(context),
     );
@@ -37,6 +40,8 @@ Widget doctor_info_body(
       "Right now I’m the head of Dentistry department in"
       "Kenyatta National Hospital."
       "Feel free to contact me to book an appointment.  ";
+
+  String currentHospital = "Karen Hospital";
   return Column(
     children: [
       Container(
@@ -73,7 +78,7 @@ Widget doctor_info_body(
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "Karen Hospital",
+                  currentHospital,
                   style: TextStyle(
                     fontSize: 18,
                     letterSpacing: 1,
@@ -87,11 +92,13 @@ Widget doctor_info_body(
                 child: ElevatedButton(
                   onPressed: (() => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BookingsPage()),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                BookingsPage(currentHospital)),
                       )),
                   child: Text("Book Appointment"),
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromRGBO(43, 147, 128, 20),
+                    primary: Colors.teal,
                   ),
                 ),
               ),

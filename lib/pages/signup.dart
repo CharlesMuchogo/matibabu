@@ -77,7 +77,7 @@ class _SignupState extends State<Signup> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      logo("Matibabu", 32, Color.fromRGBO(43, 147, 128, 20)),
+                      logo("Matibabu", 32, Colors.teal),
                       logo("Health Is Wealth", 15, Colors.black)
                     ],
                   ),
@@ -171,7 +171,7 @@ Widget textfields(
       //hintText: placeholder
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: Color.fromRGBO(43, 147, 128, 20)),
+        borderSide: BorderSide(color: Colors.teal),
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -205,7 +205,7 @@ Widget passwordFields(
       //hintText: placeholder
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: Color.fromRGBO(43, 147, 128, 20)),
+        borderSide: BorderSide(color: Colors.teal),
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),

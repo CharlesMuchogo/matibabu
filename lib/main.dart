@@ -28,7 +28,7 @@ Future<void> main() async {
         home: AuthenticationWrapper(),
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.green,
+            primarySwatch: Colors.teal,
           ),
         ),
       ),

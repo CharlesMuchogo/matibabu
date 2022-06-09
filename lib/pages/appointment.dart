@@ -1,17 +1,32 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_key_in_widget_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AppointmentPage extends StatelessWidget {
+  final String patientId;
+  final String dateOfAppointment;
+  final String typeOfConsultation;
+
+  const AppointmentPage(
+      this.patientId, this.dateOfAppointment, this.typeOfConsultation);
+
   @override
   Widget build(BuildContext context) {
-    double widthOfDevice = MediaQuery.of(context).size.width;
+    void cancel() {
+      FirebaseFirestore.instance
+          .collection("Appointments")
+          .doc(patientId)
+          .delete();
+
+      return Navigator.of(context).pop();
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Appointment"),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(43, 147, 128, 20),
+        backgroundColor: Colors.teal,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -23,7 +38,7 @@ class AppointmentPage extends StatelessWidget {
             leading: Text(
               "Time: ",
             ),
-            title: Text("date of appointment"),
+            title: Text(dateOfAppointment),
             subtitle: Text("time of appointment"),
           ),
           ListTile(
@@ -39,7 +54,7 @@ class AppointmentPage extends StatelessWidget {
               "Condultation: ",
             ),
             title: Text(
-              "purpose of appointment",
+              typeOfConsultation,
             ),
           ),
           ListTile(
@@ -57,7 +72,7 @@ class AppointmentPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ElevatedButton(
-                onPressed: null,
+                onPressed: cancel,
                 child: Text("Cancel Appointment"),
               ),
               ElevatedButton(

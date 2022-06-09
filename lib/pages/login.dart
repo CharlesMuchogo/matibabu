@@ -90,7 +90,7 @@ Widget loginfunctionality(BuildContext context, Function navigation) {
                     logo(
                       "Matibabu",
                       32,
-                      Color.fromRGBO(43, 147, 128, 20),
+                      Colors.teal,
                     ),
                     logo("Health Is Wealth", 17, Colors.black)
                   ],
@@ -114,7 +114,7 @@ Widget loginfunctionality(BuildContext context, Function navigation) {
                         "Forgot Password?",
                         style: TextStyle(
                             fontSize: 18,
-                            color: Color.fromRGBO(43, 147, 128, 20)),
+                            color: Colors.teal),
                       ),
                       onTap: () {
                         Navigator.push(
@@ -135,7 +135,7 @@ Widget loginfunctionality(BuildContext context, Function navigation) {
                               onPressed: login,
                               child: Text("Login"),
                               style: ElevatedButton.styleFrom(
-                                primary: Color.fromRGBO(43, 147, 128, 20),
+                                primary: Colors.teal,
                               ),
                             ),
                     ),
@@ -155,7 +155,7 @@ Widget loginfunctionality(BuildContext context, Function navigation) {
                             "Sign Up",
                             style: TextStyle(
                               fontSize: 18,
-                              color: Color.fromRGBO(43, 147, 128, 20),
+                              color: Colors.teal,
                             ),
                           ),
                         )
@@ -184,7 +184,7 @@ Widget textfields(
         labelText: placeholder,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
-          borderSide: BorderSide(color: Color.fromRGBO(43, 147, 128, 20)),
+          borderSide: BorderSide(color: Colors.teal),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -209,7 +209,7 @@ Widget textfields(
         labelText: placeholder,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
-          borderSide: BorderSide(color: Color.fromRGBO(43, 147, 128, 20)),
+          borderSide: BorderSide(color: Colors.teal),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
