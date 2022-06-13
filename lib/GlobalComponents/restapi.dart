@@ -49,12 +49,8 @@ class RestApi {
     }
   }
 
-  Future<String> bookAppointment(
-    String specialty,
-    String time,
-    String date,
-    String address,
-  ) async {
+  Future<String> bookAppointment(String specialty, String time, String date,
+      String address, String doctorName) async {
     final User? _user = _auth.currentUser;
     final _uid = _user?.uid;
 
@@ -65,6 +61,8 @@ class RestApi {
         "Time": time,
         "Consultation": specialty,
         "Address": address,
+        "Doctor Name": doctorName,
+        "Status": "pending",
       },
     );
     return "You have booked successfully";

@@ -53,7 +53,7 @@ class _homeState extends State<home> {
                 }
 
                 return Container(
-                  height: heightOfDevice / 4,
+                  height: heightOfDevice * 0.2,
                   width: double.infinity,
                   color: Colors.teal,
                   child: Center(
@@ -134,7 +134,13 @@ Widget doctorInfoCard() {
       stream: FirebaseFirestore.instance.collection("Doctor").snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
-          return CircularProgressIndicator();
+          return Container(
+            height: 200,
+            width: 300,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
         if (snapshot.hasError) {
           return Text("An error occured. please try again later");
@@ -168,13 +174,15 @@ Widget doctorInfoCard() {
                     ),
                     child: Center(
                       child: infocards(
-                          context,
-                          ("Dr. " +
-                              snapshot.data!.docs[index].get("First Name") +
-                              " " +
-                              snapshot.data!.docs[index].get("First Name")),
-                          'assets/images/profile.jpg',
-                          snapshot.data!.docs[index].get("specialty")),
+                        context,
+                        ("Dr. " +
+                            snapshot.data!.docs[index].get("First Name") +
+                            " " +
+                            snapshot.data!.docs[index].get("Last Name")),
+                        'assets/images/profile.jpg',
+                        snapshot.data!.docs[index].get("specialty"),
+                        snapshot.data!.docs[index].id,
+                      ),
                     ),
                   ),
                 ),
@@ -186,13 +194,13 @@ Widget doctorInfoCard() {
 }
 
 Widget infocards(BuildContext context, String name, String displayPhoto,
-    String doctorSpecialty) {
+    String doctorSpecialty, String doctorId) {
   return InkWell(
     onTap: () {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => DoctorInfo(name, doctorSpecialty)),
+            builder: (context) => DoctorInfo(name, doctorSpecialty, doctorId)),
       ); // navigate to Appointments page
     },
     child: ListTile(
@@ -288,6 +296,8 @@ Widget upcomingAppointments(String _uid) {
                         snapshot.data!.docs[index].id,
                         snapshot.data!.docs[index]["Date"],
                         snapshot.data!.docs[index]["Consultation"],
+                        snapshot.data!.docs[index]["Doctor Name"],
+                        snapshot.data!.docs[index]["Status"],
                       ),
                     ),
                   ),
@@ -306,60 +316,61 @@ Widget appointmentcards(
   String patientId,
   String dateOfAppointment,
   String consultation,
+  String doctorName,
+  String appointmentStatus,
 ) {
-  return ListTile(
-    leading: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          dateOfAppointment,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-          ),
-        ),
-      ],
-    ),
-
-    title: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          time,
-          style: TextStyle(
-            color: Colors.teal,
-            fontSize: 18,
-          ),
-        ),
-        SizedBox(
-          height: 15,
-        ),
-        Text(
-          address,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-          ),
-        ),
-      ],
-    ),
-    // subtitle: ,
-    trailing: InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => AppointmentPage(
-                    patientId,
-                    dateOfAppointment,
-                    consultation,
-                  )),
-        ); // navigate to Appointments page
-      },
-      child: Icon(
-        Icons.more_vert,
-        color: Color.fromARGB(255, 21, 121, 91),
+  return Column(
+    children: [
+      ListTile(
+        title: Text(doctorName),
+        subtitle: Text(consultation),
       ),
-    ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_month_outlined,
+                color: Colors.grey,
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Text(dateOfAppointment),
+            ],
+          ),
+          Row(
+            children: [
+              Icon(
+                Icons.access_time,
+                color: Colors.grey,
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Text(time),
+            ],
+          ),
+          Row(
+            children: [
+              Icon(Icons.circle,
+                  size: 13,
+                  color: appointmentStatus == "Pending"
+                      ? Colors.amber[700]
+                      : appointmentStatus == "Confirmed"
+                          ? Colors.green
+                          : appointmentStatus == "Cancelled"
+                              ? Colors.red
+                              : Colors.white),
+              SizedBox(
+                width: 5,
+              ),
+              Text(appointmentStatus),
+            ],
+          ),
+        ],
+      )
+    ],
   );
 }

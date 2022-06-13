@@ -5,9 +5,15 @@ class history extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        "medical history will appear here",
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Medical History"),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Text(
+          "Your medical history will appear here",
+        ),
       ),
     );
   }

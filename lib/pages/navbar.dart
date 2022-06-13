@@ -60,6 +60,8 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
             ),
             child: BottomNavigationBar(
               onTap: _selectPage,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
               unselectedItemColor: Colors.grey[300],
               unselectedFontSize: 14,
               selectedItemColor: Colors.white,

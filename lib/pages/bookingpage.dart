@@ -9,7 +9,8 @@ class BookingsPage extends StatefulWidget {
   @override
   State<BookingsPage> createState() => _BookingsPageState();
   final String address;
-  const BookingsPage(this.address);
+  final String doctorName;
+  const BookingsPage(this.address, this.doctorName);
 }
 
 String _selectedDate = "";
@@ -21,6 +22,8 @@ class _BookingsPageState extends State<BookingsPage> {
   Future<void> _openDatePicker(BuildContext context) async {
     final DateTime? date = await showDatePicker(
       context: context,
+      selectableDayPredicate: (DateTime val) =>
+          val.weekday == 6 || val.weekday == 7 ? false : true,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       helpText: "SELECT BOOKING DATE",
@@ -61,13 +64,15 @@ class _BookingsPageState extends State<BookingsPage> {
         },
       );
     } else {
-      setState(() {
-        formfilled = false;
-      });
+      setState(
+        () {
+          formfilled = false;
+        },
+      );
 
       RestApi restObject = RestApi();
-      restObject.bookAppointment(
-          _dropdownValue, formatedTime, _selectedDate, widget.address);
+      restObject.bookAppointment(_dropdownValue, formatedTime, _selectedDate,
+          widget.address, widget.doctorName);
 
       final snackBar = SnackBar(
         content: const Text('Your Appointment was booked successfully!'),
