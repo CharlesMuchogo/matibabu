@@ -289,15 +289,32 @@ Widget upcomingAppointments(String _uid) {
                       ],
                     ),
                     child: Center(
-                      child: appointmentcards(
-                        context,
-                        snapshot.data!.docs[index]["Time"],
-                        snapshot.data!.docs[index]["Address"],
-                        snapshot.data!.docs[index].id,
-                        snapshot.data!.docs[index]["Date"],
-                        snapshot.data!.docs[index]["Consultation"],
-                        snapshot.data!.docs[index]["Doctor Name"],
-                        snapshot.data!.docs[index]["Status"],
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AppointmentPage(
+                                snapshot.data!.docs[index].id,
+                                snapshot.data!.docs[index]["Date"],
+                                snapshot.data!.docs[index]["Consultation"],
+                                snapshot.data!.docs[index]["Time"],
+                                snapshot.data!.docs[index]["Address"],
+                                snapshot.data!.docs[index]["Doctor Name"],
+                              ),
+                            ),
+                          ); // navigate to Appointments page
+                        },
+                        child: appointmentcards(
+                          context,
+                          snapshot.data!.docs[index]["Time"],
+                          snapshot.data!.docs[index]["Address"],
+                          snapshot.data!.docs[index].id,
+                          snapshot.data!.docs[index]["Date"],
+                          snapshot.data!.docs[index]["Consultation"],
+                          snapshot.data!.docs[index]["Doctor Name"],
+                          snapshot.data!.docs[index]["Status"],
+                        ),
                       ),
                     ),
                   ),

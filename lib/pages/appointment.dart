@@ -7,9 +7,16 @@ class AppointmentPage extends StatelessWidget {
   final String patientId;
   final String dateOfAppointment;
   final String typeOfConsultation;
-
+  final String timeOfAppointment;
+  final String addressOfHospital;
+  final String doctorName;
   const AppointmentPage(
-      this.patientId, this.dateOfAppointment, this.typeOfConsultation);
+      this.patientId,
+      this.dateOfAppointment,
+      this.typeOfConsultation,
+      this.timeOfAppointment,
+      this.addressOfHospital,
+      this.doctorName);
 
   @override
   Widget build(BuildContext context) {
@@ -28,60 +35,56 @@ class AppointmentPage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.teal,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          ListTile(
-            leading: Text(
-              "Time: ",
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 20,
             ),
-            title: Text(dateOfAppointment),
-            subtitle: Text("time of appointment"),
-          ),
-          ListTile(
-            leading: Text(
-              "Address: ",
+            ListTile(
+              leading: Icon(Icons.calendar_month_outlined),
+              title: Text(dateOfAppointment),
             ),
-            title: Text(
-              "Address of the hospital: ",
+            ListTile(
+              leading: Icon(Icons.access_time),
+              title: Text(timeOfAppointment),
             ),
-          ),
-          ListTile(
-            leading: Text(
-              "Condultation: ",
-            ),
-            title: Text(
-              typeOfConsultation,
-            ),
-          ),
-          ListTile(
-            leading: Text(
-              "Doctor: ",
-            ),
-            title: Text(
-              "Doctor name",
-            ),
-            subtitle: Text(
-              "contats- telephone number",
-            ), //should lead user to the doctors page of specific doctor
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: cancel,
-                child: Text("Cancel Appointment"),
+            ListTile(
+              leading: Icon(Icons.location_on),
+              title: Text(
+                addressOfHospital,
               ),
-              ElevatedButton(
-                onPressed: null,
-                child: Text("Reschedule Appointment"),
-              )
-            ],
-          ),
-        ],
+            ),
+            ListTile(
+              leading: Icon(Icons.medical_services),
+              title: Text(
+                typeOfConsultation,
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person_outline),
+              title: Text(
+                doctorName,
+              ),
+              //should lead user to the doctors page of specific doctor
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: cancel,
+                  child: Text("Cancel Appointment"),
+                ),
+                ElevatedButton(
+                  onPressed: null,
+                  child: Text("Reschedule Appointment"),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

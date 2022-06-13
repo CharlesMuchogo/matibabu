@@ -62,9 +62,9 @@ class RestApi {
         "Consultation": specialty,
         "Address": address,
         "Doctor Name": doctorName,
-        "Status": "pending",
+        "Status": "Pending",
       },
     );
-    return "You have booked successfully";
+    return "You have booked your appointment successfully";
   }
 }
