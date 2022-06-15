@@ -232,10 +232,7 @@ Widget infocards(BuildContext context, String name, String displayPhoto,
 
 Widget upcomingAppointments(String _uid) {
   return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection("Appointments")
-          .orderBy("Date")
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection("Appointments").snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return Container(

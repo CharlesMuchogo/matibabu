@@ -11,22 +11,21 @@ class AppointmentPage extends StatelessWidget {
   final String addressOfHospital;
   final String doctorName;
   const AppointmentPage(
-      this.patientId,
-      this.dateOfAppointment,
-      this.typeOfConsultation,
-      this.timeOfAppointment,
-      this.addressOfHospital,
-      this.doctorName);
+    this.patientId,
+    this.dateOfAppointment,
+    this.typeOfConsultation,
+    this.timeOfAppointment,
+    this.addressOfHospital,
+    this.doctorName,
+  );
 
   @override
   Widget build(BuildContext context) {
-    void cancel() {
+    cancelappointment() {
       FirebaseFirestore.instance
           .collection("Appointments")
           .doc(patientId)
           .delete();
-
-      return Navigator.of(context).pop();
     }
 
     return Scaffold(
@@ -74,7 +73,40 @@ class AppointmentPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
-                  onPressed: cancel,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Do you want to cancel the appointment?"),
+                          actions: [
+                            MaterialButton(
+                              elevation: 5,
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                "No",
+                                style:
+                                    TextStyle(color: Colors.teal, fontSize: 18),
+                              ),
+                            ),
+                            MaterialButton(
+                              elevation: 5,
+                              onPressed: () {
+                                Navigator.of(context).pop(cancelappointment());
+                              },
+                              child: Text(
+                                "Yes",
+                                style:
+                                    TextStyle(color: Colors.red, fontSize: 18),
+                              ),
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  },
                   child: Text("Cancel Appointment"),
                 ),
                 ElevatedButton(

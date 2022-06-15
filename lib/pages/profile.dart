@@ -19,6 +19,22 @@ class _profileState extends State<profile> {
 
   var textValue = 'Switch is OFF';
 
+  canceldialogue(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Do you want to Logout?"),
+            actions: [
+              MaterialButton(
+                onPressed: null,
+                child: Text("cancel"),
+              )
+            ],
+          );
+        });
+  }
+
   void toggleSwitch(bool value) {
     if (isSwitched == false) {
       setState(() {
@@ -31,7 +47,7 @@ class _profileState extends State<profile> {
     }
   }
 
-  void signOut() async {
+  signOut() async {
     try {
       _auth.signOut();
     } on FirebaseAuth catch (e) {
@@ -136,7 +152,40 @@ class _profileState extends State<profile> {
                   ),
                 ),
                 InkWell(
-                  onTap: signOut,
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Do you want to Logout?"),
+                          actions: [
+                            MaterialButton(
+                              elevation: 5,
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                "No",
+                                style:
+                                    TextStyle(color: Colors.teal, fontSize: 18),
+                              ),
+                            ),
+                            MaterialButton(
+                              elevation: 5,
+                              onPressed: () {
+                                Navigator.of(context).pop(signOut());
+                              },
+                              child: Text(
+                                "Yes",
+                                style:
+                                    TextStyle(color: Colors.red, fontSize: 18),
+                              ),
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  },
                   child: ListTile(
                     title: Text('Logout'),
                     leading: Icon(
