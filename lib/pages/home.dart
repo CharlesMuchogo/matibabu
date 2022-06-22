@@ -179,7 +179,7 @@ Widget doctorInfoCard() {
                             snapshot.data!.docs[index].get("First Name") +
                             " " +
                             snapshot.data!.docs[index].get("Last Name")),
-                        'assets/images/profile.jpg',
+                        snapshot.data!.docs[index].get("Profile Photo"),
                         snapshot.data!.docs[index].get("specialty"),
                         snapshot.data!.docs[index].id,
                       ),
@@ -195,19 +195,30 @@ Widget doctorInfoCard() {
 
 Widget infocards(BuildContext context, String name, String displayPhoto,
     String doctorSpecialty, String doctorId) {
+  Widget profilePhoto(BuildContext context, String profileUrl) {
+    if (profileUrl == "") {
+      return CircleAvatar(
+        backgroundImage: AssetImage("assets/images/emptyprofile.png"),
+        radius: 32,
+      );
+    }
+    return CircleAvatar(
+      backgroundImage: NetworkImage(profileUrl),
+      radius: 32,
+    );
+  }
+
   return InkWell(
     onTap: () {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => DoctorInfo(name, doctorSpecialty, doctorId)),
+            builder: (context) =>
+                DoctorInfo(name, doctorSpecialty, doctorId, displayPhoto)),
       ); // navigate to Appointments page
     },
     child: ListTile(
-      leading: CircleAvatar(
-        backgroundImage: AssetImage(displayPhoto),
-        radius: 32.0,
-      ),
+      leading: profilePhoto(context, displayPhoto),
       title: Text(
         name,
         style: TextStyle(
@@ -236,7 +247,7 @@ Widget upcomingAppointments(String _uid) {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return Container(
-            height: 200,
+            height: 150,
             width: 300,
             child: Center(
               child: CircularProgressIndicator(),

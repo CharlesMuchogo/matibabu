@@ -43,6 +43,8 @@ dependencies:
   internationalization: ^4.0.0+1
   image_picker: ^0.8.5+3
   firebase_storage: ^10.2.18
+  url_launcher: ^6.1.3
+  flutter_launch: ^0.3.0
 
 dev_dependencies:
   flutter_test:

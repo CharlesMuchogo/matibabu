@@ -2,19 +2,21 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_launch/flutter_launch.dart';
 import 'package:matibabu/pages/bookingpage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DoctorInfo extends StatelessWidget {
   final String doctorName;
   final String doctorSpecialty;
   final String doctorId;
+  final String displayPhotoUrl;
 
-  DoctorInfo(this.doctorName, this.doctorSpecialty, this.doctorId);
+  DoctorInfo(this.doctorName, this.doctorSpecialty, this.doctorId,
+      this.displayPhotoUrl);
 
   @override
   Widget build(BuildContext context) {
-    double widthOfDevice = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -42,8 +44,6 @@ Widget doctor_info_body(
       "Kenyatta National Hospital."
       "Feel free to contact me to book an appointment.  ";
 
-  String currentHospital = "Karen Hospital";
-
   return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection("Doctor")
@@ -64,19 +64,34 @@ Widget doctor_info_body(
           return Text("Oops. An error occured. Try again later");
         }
 
-        return Column(
-          children: [
-            Container(
+        Widget displayPhoto() {
+          if (snapshot.data!.get("Profile Photo") == "") {
+            return Container(
               height: heightOfDevice / 4,
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage(
-                      "https://firebasestorage.googleapis.com/v0/b/matibabu-1254d.appspot.com/o/doctor_image.jpeg?alt=media&token=b4c09479-454b-44a4-8686-3d47239c86c3"),
+                  image: AssetImage("assets/images/emptyprofile.png"),
                 ),
               ),
+            );
+          }
+          return Container(
+            height: heightOfDevice / 4,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(snapshot.data!.get("Profile Photo")),
+              ),
             ),
+          );
+        }
+
+        return Column(
+          children: [
+            displayPhoto(),
             Container(
               color: Colors.white,
               child: Column(
@@ -143,12 +158,24 @@ Widget doctor_info_body(
                     leading: Icon(Icons.email_outlined),
                     title: Text(snapshot.data!.get("Email")),
                   ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.whatsapp_outlined,
-                      color: Colors.green,
+                  InkWell(
+                    onTap: () async {
+                      String phoneNumber = snapshot.data!.get("Phone Number");
+                      bool whatsapp =
+                          await FlutterLaunch.hasApp(name: "whatsapp");
+
+                      if (whatsapp) {
+                        await FlutterLaunch.launchWhatsapp(
+                            phone: phoneNumber, message: "Hello");
+                      }
+                    },
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.whatsapp_outlined,
+                        color: Colors.green,
+                      ),
+                      title: Text(snapshot.data!.get("Phone Number")),
                     ),
-                    title: Text(snapshot.data!.get("Phone Number")),
                   )
                 ],
               ),
@@ -156,22 +183,4 @@ Widget doctor_info_body(
           ],
         );
       });
-}
-
-Widget myOwnListtile(
-    String placeholder, IconData listtileLeadingIcon, BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.only(
-        left: double.infinity * 0.25, top: 10, bottom: 10, right: 0),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Icon(listtileLeadingIcon),
-        SizedBox(
-          width: 30,
-        ),
-        Text(placeholder),
-      ],
-    ),
-  );
 }
