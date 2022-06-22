@@ -68,3 +68,31 @@ class RestApi {
     return "You have booked your appointment successfully";
   }
 }
+
+class AppointmentDetails {
+  String? _uid;
+  String? date;
+  String? time;
+  String? specialty;
+  String? address;
+  String? doctorName;
+
+  AppointmentDetails();
+
+  Map<String, dynamic> toJson() => {
+        "Patient Id": _uid,
+        "Date": date,
+        "Time": time,
+        "Consultation": specialty,
+        "Address": address,
+        "Doctor Name": doctorName,
+        "Status": "Pending",
+      };
+  AppointmentDetails.fromSnapshot(snapshot)
+      : _uid = snapshot.data()["Patient Id"],
+        date = snapshot.data()["Patient Id"],
+        time = snapshot.data()["Patient Id"],
+        specialty = snapshot.data()["Patient Id"],
+        address = snapshot.data()["Patient Id"],
+        doctorName = snapshot.data()["Patient Id"];
+}
