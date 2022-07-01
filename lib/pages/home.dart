@@ -37,7 +37,11 @@ class _homeState extends State<home> {
                     child: CircularProgressIndicator(),
                   );
                 }
-                if (snapshot.hasError) {}
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text("An error occured. Hold on as we fix it "),
+                  );
+                }
 
                 var hour = DateTime.now().hour;
                 String greeting() {
@@ -213,8 +217,12 @@ Widget infocards(BuildContext context, String name, String displayPhoto,
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                DoctorInfo(name, doctorSpecialty, doctorId, displayPhoto)),
+            builder: (context) => DoctorInfo(
+                  name,
+                  doctorSpecialty,
+                  doctorId,
+                  displayPhoto,
+                )),
       ); // navigate to Appointments page
     },
     child: ListTile(
@@ -243,7 +251,11 @@ Widget infocards(BuildContext context, String name, String displayPhoto,
 
 Widget upcomingAppointments(String _uid) {
   return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("Appointments").snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection("Patient")
+          .doc(_uid)
+          .collection("My appointments")
+          .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return Container(
@@ -304,11 +316,13 @@ Widget upcomingAppointments(String _uid) {
                             MaterialPageRoute(
                               builder: (context) => AppointmentPage(
                                 snapshot.data!.docs[index].id,
+                                snapshot.data!.docs[index]["Doctor Id"],
                                 snapshot.data!.docs[index]["Date"],
                                 snapshot.data!.docs[index]["Consultation"],
                                 snapshot.data!.docs[index]["Time"],
                                 snapshot.data!.docs[index]["Address"],
                                 snapshot.data!.docs[index]["Doctor Name"],
+                                snapshot.data!.docs[index]["Status"],
                               ),
                             ),
                           ); // navigate to Appointments page

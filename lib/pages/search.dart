@@ -25,49 +25,58 @@ class _SearchState extends State<Search> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
         child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.fromLTRB(115, 0, 0, 0),
-                height: 39,
-                width: 368,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(30),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Container(
+              padding: EdgeInsets.fromLTRB(115, 0, 0, 0),
+              height: 39,
+              width: 368,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30),
+                ),
+                color: Color.fromRGBO(245, 242, 242, 10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey,
+                    offset: Offset(0.0, 1.0), //(x,y)
+                    blurRadius: 6.0,
                   ),
-                  color: Color.fromRGBO(245, 242, 242, 10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(0.0, 1.0), //(x,y)
-                      blurRadius: 6.0,
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  controller: searchdoctorcontroler,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      //labelText: 'Enter Name',
-                      hintText: 'Search for a doctor'),
-                ),
+                ],
               ),
-              SizedBox(
-                height: 67,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextField(
+                    controller: searchdoctorcontroler,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        //labelText: 'Enter Name',
+                        hintText: 'Search for a doctor'),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      searchinfo(
+                          searchdoctorcontroler.text.trim().toLowerCase());
+                    },
+                    icon: Icon(Icons.search),
+                  )
+                ],
               ),
-              searchinfo()
-            ],
-          ),
+            ),
+          ]),
         ),
       ),
     );
   }
 }
 
-Widget searchinfo() {
+Widget searchinfo(String controler) {
   return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("Doctor").snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection("Doctor")
+          .where("Specialty", isEqualTo: controler)
+          .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -118,8 +127,9 @@ Widget searchinfo() {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               CircleAvatar(
-                                backgroundImage:
-                                    AssetImage('assets/images/profile.jpg'),
+                                backgroundImage: NetworkImage(snapshot
+                                    .data!.docs[index]
+                                    .get("Profile Photo")),
                                 radius: 32.0,
                               ),
                               Column(

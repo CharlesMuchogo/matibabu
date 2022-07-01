@@ -9,8 +9,6 @@ import 'package:matibabu/GlobalComponents/restapi.dart';
 import 'package:matibabu/pages/login.dart';
 import 'package:provider/provider.dart';
 
-import '../GlobalComponents/authenticationservice.dart';
-
 class Signup extends StatefulWidget {
   @override
   State<Signup> createState() => _SignupState();
@@ -69,89 +67,91 @@ class _SignupState extends State<Signup> {
               );
             }
 
-            return Column(
-              children: [
-                SizedBox(
-                  height: heightOfDevice * 0.25,
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      logo("Matibabu", 32, Colors.teal),
-                      logo("Health Is Wealth", 15, Colors.black)
-                    ],
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: heightOfDevice * 0.25,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        logo("Matibabu", 32, Colors.teal),
+                        logo("Health Is Wealth", 15, Colors.black)
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: Container(
-                                padding: EdgeInsets.all(20),
-                                child: Column(
-                                  children: [
-                                    textfields(firstNamecontroler,
-                                        "Enter your first name"),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    textfields(lastNamecontroler,
-                                        "Enter your last name"),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    textfields(
-                                        emailcontroler, "Enter your email"),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    textfields(phoneNumbercontroler,
-                                        "Enter phone number"),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    passwordFields(
-                                        passwordcontroler, "Create password"),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    passwordFields(confirmpasswordcontroler,
-                                        "Confirm password"),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    SizedBox(
-                                      height: 42,
-                                      width: 196,
-                                      child: _isLoading
-                                          ? CircularProgressIndicator()
-                                          : ElevatedButton(
-                                              onPressed: _input,
-                                              child: Text("Sign up"),
-                                              style: ElevatedButton.styleFrom(
-                                                  primary: Color.fromRGBO(
-                                                      43, 147, 128, 20)),
-                                            ),
-                                    )
-                                  ],
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: Container(
+                                  padding: EdgeInsets.all(20),
+                                  child: Column(
+                                    children: [
+                                      textfields(firstNamecontroler,
+                                          "Enter your first name"),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      textfields(lastNamecontroler,
+                                          "Enter your last name"),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      textfields(
+                                          emailcontroler, "Enter your email"),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      textfields(phoneNumbercontroler,
+                                          "Enter phone number"),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      passwordFields(
+                                          passwordcontroler, "Create password"),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      passwordFields(confirmpasswordcontroler,
+                                          "Confirm password"),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      SizedBox(
+                                        height: 42,
+                                        width: 196,
+                                        child: _isLoading
+                                            ? CircularProgressIndicator()
+                                            : ElevatedButton(
+                                                onPressed: _input,
+                                                child: Text("Sign up"),
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Color.fromRGBO(
+                                                        43, 147, 128, 20)),
+                                              ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           }),
     );
@@ -164,11 +164,8 @@ Widget textfields(
 ) {
   return TextFormField(
     controller: textfieldcontroler,
-
-    // ignore: prefer_const_constructors
     decoration: InputDecoration(
       labelText: placeholder,
-      //hintText: placeholder
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
         borderSide: BorderSide(color: Colors.teal),

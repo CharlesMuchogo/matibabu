@@ -34,6 +34,14 @@ class _profileState extends State<profile> {
     setState(() {
       imageFile = File(pictureFile!.path);
     });
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
     final _firebasestorage = FirebaseStorage.instance;
 
     if (imageFile != null) {
@@ -53,6 +61,7 @@ class _profileState extends State<profile> {
     } else {
       print('No Image Path Received');
     }
+    Navigator.pop(context);
   }
 
   _pickfromCamera(String imagename) async {
@@ -62,6 +71,13 @@ class _profileState extends State<profile> {
     setState(() {
       imageFile = File(pictureFile!.path);
     });
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
 
     final _firebasestorage = FirebaseStorage.instance;
     if (imageFile != null) {
@@ -82,6 +98,7 @@ class _profileState extends State<profile> {
     } else {
       print('No Image Path Received');
     }
+    Navigator.pop(context);
   }
 
   Widget displayImage(String profileUrl) {

@@ -89,98 +89,110 @@ Widget doctor_info_body(
           );
         }
 
-        return Column(
-          children: [
-            displayPhoto(),
-            Container(
-              color: Colors.white,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        right: 30, left: 30, top: 20, bottom: 20),
-                    child: Text(
-                      doctorDescription,
-                      style: TextStyle(
-                        fontSize: 18,
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              displayPhoto(),
+              Container(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          right: 30, left: 30, top: 20, bottom: 20),
+                      child: Text(
+                        doctorDescription,
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Current Hospital: ",
-                        style: TextStyle(
-                            fontSize: 18,
-                            letterSpacing: 0.5,
-                            fontWeight: FontWeight.bold),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Current Hospital: ",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          snapshot.data!.get("Current Hospital"),
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: SizedBox(
+                        child: ElevatedButton(
+                          onPressed: (() => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BookingsPage(
+                                          snapshot.data!
+                                              .get("Current Hospital"),
+                                          doctorName,
+                                          doctorid,
+                                        )),
+                              )),
+                          child: Text("Book Appointment"),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.teal,
+                          ),
+                        ),
                       ),
-                      Text(
-                        snapshot.data!.get("Current Hospital"),
-                        style: TextStyle(
+                    ),
+                    Text(
+                      "Contacts:",
+                      style: TextStyle(
                           fontSize: 18,
                           letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: SizedBox(
-                      child: ElevatedButton(
-                        onPressed: (() => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => BookingsPage(
-                                      snapshot.data!.get("Current Hospital"),
-                                      doctorName)),
-                            )),
-                        child: Text("Book Appointment"),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.teal,
-                        ),
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 60),
+                      child: ListTile(
+                        leading: Icon(Icons.phone_outlined),
+                        title: Text(snapshot.data!.get("Phone Number")),
                       ),
                     ),
-                  ),
-                  Text(
-                    "Contacts:",
-                    style: TextStyle(
-                        fontSize: 18,
-                        letterSpacing: 1,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.phone_outlined),
-                    title: Text(snapshot.data!.get("Phone Number")),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.email_outlined),
-                    title: Text(snapshot.data!.get("Email")),
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      String phoneNumber = snapshot.data!.get("Phone Number");
-                      bool whatsapp =
-                          await FlutterLaunch.hasApp(name: "whatsapp");
+                    Padding(
+                      padding: const EdgeInsets.only(left: 60),
+                      child: ListTile(
+                        leading: Icon(Icons.email_outlined),
+                        title: Text(snapshot.data!.get("Email")),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 60),
+                      child: InkWell(
+                        onTap: () async {
+                          String phoneNumber =
+                              snapshot.data!.get("Phone Number");
+                          bool whatsapp =
+                              await FlutterLaunch.hasApp(name: "whatsapp");
 
-                      if (whatsapp) {
-                        await FlutterLaunch.launchWhatsapp(
-                            phone: phoneNumber, message: "Hello");
-                      }
-                    },
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.whatsapp_outlined,
-                        color: Colors.green,
+                          if (whatsapp) {
+                            await FlutterLaunch.launchWhatsapp(
+                                phone: phoneNumber, message: "Hello");
+                          }
+                        },
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.whatsapp_outlined,
+                            color: Colors.green,
+                          ),
+                          title: Text(snapshot.data!.get("Phone Number")),
+                        ),
                       ),
-                      title: Text(snapshot.data!.get("Phone Number")),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       });
 }

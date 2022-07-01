@@ -10,13 +10,17 @@ class BookingsPage extends StatefulWidget {
   State<BookingsPage> createState() => _BookingsPageState();
   final String address;
   final String doctorName;
-  const BookingsPage(this.address, this.doctorName);
+  final String doctorUid;
+
+  const BookingsPage(
+    this.address,
+    this.doctorName,
+    this.doctorUid,
+  );
 }
 
 String _selectedDate = "";
 String formatedTime = "";
-String error = "Please fill in the details";
-bool formfilled = true;
 
 class _BookingsPageState extends State<BookingsPage> {
   Future<void> _openDatePicker(BuildContext context) async {
@@ -56,33 +60,18 @@ class _BookingsPageState extends State<BookingsPage> {
     }
   }
 
-  void book() {
+  book() {
     if ((formatedTime.isEmpty) || (_selectedDate.isEmpty)) {
-      setState(
-        () {
-          formfilled = false;
-        },
+      return Text(
+        "Fill in all details",
+        style: TextStyle(
+            color: Colors.red, fontSize: 20, fontWeight: FontWeight.bold),
       );
     } else {
-      setState(
-        () {
-          formfilled = false;
-        },
-      );
-
       RestApi restObject = RestApi();
       restObject.bookAppointment(_dropdownValue, formatedTime, _selectedDate,
-          widget.address, widget.doctorName);
-
-      final snackBar = SnackBar(
-        content: const Text('Your Appointment was booked successfully!'),
-        backgroundColor: (Colors.grey[900]),
-        action: SnackBarAction(
-          label: 'dismiss',
-          onPressed: () {},
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          widget.address, widget.doctorName, widget.doctorUid, context);
+      return Container();
     }
   }
 
@@ -109,17 +98,7 @@ class _BookingsPageState extends State<BookingsPage> {
         children: [
           SizedBox(
             height: (MediaQuery.of(context).size.height * 0.15),
-            child: Center(
-              child: formfilled
-                  ? Text("")
-                  : Text(
-                      error,
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-            ),
+            child: Center(child: Text("")),
           ),
           ListTile(
             leading: IconButton(

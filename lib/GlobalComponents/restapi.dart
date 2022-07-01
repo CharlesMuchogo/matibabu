@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class RestApi {
   final FirebaseFirestore _fire = FirebaseFirestore.instance;
@@ -18,6 +19,7 @@ class RestApi {
         "First Name": firstName,
         "Last Name": lastName,
         "Email": email,
+        "Profile Photo": "https://bit.ly/3QR1Z8n",
         "Phone Number": phoneNumber
       },
     );
@@ -49,14 +51,32 @@ class RestApi {
     }
   }
 
-  Future<String> bookAppointment(String specialty, String time, String date,
-      String address, String doctorName) async {
+  Future<String> bookAppointment(
+      String specialty,
+      String time,
+      String date,
+      String address,
+      String doctorName,
+      String doctorUid,
+      BuildContext context) async {
     final User? _user = _auth.currentUser;
     final _uid = _user?.uid;
 
-    await _fire.collection("Appointments").doc().set(
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+    await _fire
+        .collection("Patient")
+        .doc(_uid)
+        .collection("My appointments")
+        .doc(date + time)
+        .set(
       {
-        "Patient Id": _uid,
+        "Doctor Id": doctorUid,
         "Date": date,
         "Time": time,
         "Consultation": specialty,
@@ -65,6 +85,31 @@ class RestApi {
         "Status": "Pending",
       },
     );
+    await _fire
+        .collection("Doctor")
+        .doc(doctorUid)
+        .collection("My appointments")
+        .doc(date + time)
+        .set(
+      {
+        "Patient Id": _uid,
+        "Date": date,
+        "Time": time,
+        "Consultation": specialty,
+        "Address": address,
+        "Status": "Pending",
+      },
+    );
+    Navigator.pop(context);
+    final snackBar = SnackBar(
+      content: const Text('Your Appointment was booked successfully!'),
+      backgroundColor: (Colors.grey[900]),
+      action: SnackBarAction(
+        label: 'dismiss',
+        onPressed: () {},
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
     return "You have booked your appointment successfully";
   }
 }
