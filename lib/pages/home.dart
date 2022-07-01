@@ -162,7 +162,7 @@ Widget doctorInfoCard() {
                   itemBuilder: (context, index) => Container(
                     height: 200,
                     width: 300,
-                    margin: EdgeInsets.all(15),
+                    margin: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(
                         Radius.circular(5),
@@ -255,6 +255,7 @@ Widget upcomingAppointments(String _uid) {
           .collection("Patient")
           .doc(_uid)
           .collection("My appointments")
+          .orderBy("Date", descending: true)
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
