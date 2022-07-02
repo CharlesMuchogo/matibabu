@@ -7,7 +7,9 @@ class UpdateDetails extends StatefulWidget {
   final String firstName;
   final String lastName;
   final String phoneNumber;
-  UpdateDetails(this.userId, this.firstName, this.lastName, this.phoneNumber);
+  final String address;
+  UpdateDetails(this.userId, this.firstName, this.lastName, this.phoneNumber,
+      this.address);
 
   @override
   State<UpdateDetails> createState() => _UpdateDetailsState();
@@ -24,6 +26,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
     firstnamecontroler.text = widget.firstName;
     lastnamecontroler.text = widget.lastName;
     phonenumbercontroler.text = widget.phoneNumber;
+    addresscontroler.text = widget.address;
 
     Future updateDetails() async {
       try {
@@ -33,7 +36,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
             .update({
           "First Name": firstnamecontroler.text,
           "Last Name": lastnamecontroler.text,
-          // "address": addresscontroler.text,
+          "Address": addresscontroler.text,
           "Phone Number": phonenumbercontroler.text
         });
       } on FirebaseException catch (e) {

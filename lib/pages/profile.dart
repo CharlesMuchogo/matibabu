@@ -273,6 +273,7 @@ class _profileState extends State<profile> {
                               snapshot.data?.get("First Name"),
                               snapshot.data?.get("Last Name"),
                               snapshot.data?.get("Phone Number"),
+                              snapshot.data?.get("Address"),
                             ),
                           ),
                         );
@@ -284,7 +285,7 @@ class _profileState extends State<profile> {
                     ),
                     UserInfo("Email", snapshot.data?.get("Email"),
                         Icons.email_outlined, context),
-                    UserInfo("Address", "Maasai Lodge",
+                    UserInfo("Address", snapshot.data?.get("Address"),
                         Icons.location_on_outlined, context),
                     UserInfo("Phone Number", snapshot.data?.get("Phone Number"),
                         Icons.phone, context),

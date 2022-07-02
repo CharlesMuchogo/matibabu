@@ -49,12 +49,15 @@ class _SearchState extends State<Search> {
                     ),
                     child: Container(
                       width: 300,
-                      child: TextField(
-                        controller: searchdoctorcontroler,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            //labelText: 'Enter Name',
-                            hintText: 'Search for a doctor'),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 30, right: 30),
+                        child: TextField(
+                          controller: searchdoctorcontroler,
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              //labelText: 'Enter Name',
+                              hintText: 'Search for a doctor'),
+                        ),
                       ),
                     ),
                   ),
@@ -63,7 +66,7 @@ class _SearchState extends State<Search> {
                   onPressed: () {
                     setState(() {
                       searchdoctorcontroler.text =
-                          searchdoctorcontroler.text.toLowerCase().trim();
+                          searchdoctorcontroler.text.trim();
                     });
                   },
                   icon: Icon(Icons.search),

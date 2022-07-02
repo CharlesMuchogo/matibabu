@@ -217,12 +217,13 @@ Widget infocards(BuildContext context, String name, String displayPhoto,
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => DoctorInfo(
-                  name,
-                  doctorSpecialty,
-                  doctorId,
-                  displayPhoto,
-                )),
+          builder: (context) => DoctorInfo(
+            name,
+            doctorSpecialty,
+            doctorId,
+            displayPhoto,
+          ),
+        ),
       ); // navigate to Appointments page
     },
     child: ListTile(

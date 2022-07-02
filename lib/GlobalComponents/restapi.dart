@@ -9,7 +9,7 @@ class RestApi {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<String> createData(String firstName, String lastName, String email,
-      String phoneNumber) async {
+      String phoneNumber, String address) async {
     final User? _user = _auth.currentUser;
     final _uid = _user?.uid;
 
@@ -20,7 +20,8 @@ class RestApi {
         "Last Name": lastName,
         "Email": email,
         "Profile Photo": "https://bit.ly/3QR1Z8n",
-        "Phone Number": phoneNumber
+        "Phone Number": phoneNumber,
+        "Adress": address,
       },
     );
     return "Signup successful";
@@ -106,38 +107,12 @@ class RestApi {
       backgroundColor: (Colors.grey[900]),
       action: SnackBarAction(
         label: 'dismiss',
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pop(context);
+        },
       ),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
     return "You have booked your appointment successfully";
   }
-}
-
-class AppointmentDetails {
-  String? _uid;
-  String? date;
-  String? time;
-  String? specialty;
-  String? address;
-  String? doctorName;
-
-  AppointmentDetails();
-
-  Map<String, dynamic> toJson() => {
-        "Patient Id": _uid,
-        "Date": date,
-        "Time": time,
-        "Consultation": specialty,
-        "Address": address,
-        "Doctor Name": doctorName,
-        "Status": "Pending",
-      };
-  AppointmentDetails.fromSnapshot(snapshot)
-      : _uid = snapshot.data()["Patient Id"],
-        date = snapshot.data()["Patient Id"],
-        time = snapshot.data()["Patient Id"],
-        specialty = snapshot.data()["Patient Id"],
-        address = snapshot.data()["Patient Id"],
-        doctorName = snapshot.data()["Patient Id"];
 }

@@ -57,7 +57,7 @@ class AppointmentPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Appointment"),
+        title: Text("Appointment details"),
         centerTitle: true,
         backgroundColor: Colors.teal,
       ),
@@ -96,110 +96,71 @@ class AppointmentPage extends StatelessWidget {
               ),
               //should lead user to the doctors page of specific doctor
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                status == "Cancelled"
-                    ? InkWell(
-                        onTap: cancelappointment,
-                        child: ElevatedButton(
+            status == "Cancelled"
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      cancelAppointment(
+                          "Delete appointment", cancelappointment, context),
+                      ElevatedButton(
                           onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text(
-                                      "Do you want to delete the appointment?"),
-                                  actions: [
-                                    MaterialButton(
-                                      elevation: 5,
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text(
-                                        "No",
-                                        style: TextStyle(
-                                            color: Colors.teal, fontSize: 18),
-                                      ),
-                                    ),
-                                    MaterialButton(
-                                      elevation: 5,
-                                      onPressed: () {
-                                        Navigator.of(context)
-                                            .pop(cancelappointment());
-                                      },
-                                      child: Text(
-                                        "Yes",
-                                        style: TextStyle(
-                                            color: Colors.red, fontSize: 18),
-                                      ),
-                                    )
-                                  ],
-                                );
-                              },
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => BookingsPage(
+                                      addressOfHospital,
+                                      doctorName,
+                                      doctorUid)),
                             );
                           },
-                          child: Text("Delete Appointment"),
-                        ),
-                      )
-                    : ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text(
-                                    "Do you want to cancel the appointment?"),
-                                actions: [
-                                  MaterialButton(
-                                    elevation: 5,
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      "No",
-                                      style: TextStyle(
-                                          color: Colors.teal, fontSize: 18),
-                                    ),
-                                  ),
-                                  MaterialButton(
-                                    elevation: 5,
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(cancelappointment());
-                                    },
-                                    child: Text(
-                                      "Yes",
-                                      style: TextStyle(
-                                          color: Colors.red, fontSize: 18),
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        child: Text("Cancel Appointment"),
-                      ),
-                ElevatedButton(
-                  onPressed: status == "Confirmed"
-                      ? null
-                      : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BookingsPage(
-                                  addressOfHospital, doctorName, doctorUid),
-                            ),
-                          );
-                        },
-                  child: Text("Reschedule Appointment"),
-                )
-              ],
-            ),
+                          child: Text("Reschedule appointment"))
+                    ],
+                  )
+                : cancelAppointment(
+                    "Cancel appointment", cancelappointment, context),
+            status == "Confirmed" ? Container() : Container(),
           ],
         ),
       ),
     );
   }
+}
+
+Widget cancelAppointment(
+    String name, Function cancelappointment, BuildContext context) {
+  return ElevatedButton(
+    style: ElevatedButton.styleFrom(primary: Colors.red),
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Do you want to cancel the appointment?"),
+            actions: [
+              MaterialButton(
+                elevation: 5,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "No",
+                  style: TextStyle(color: Colors.teal, fontSize: 18),
+                ),
+              ),
+              MaterialButton(
+                elevation: 5,
+                onPressed: () {
+                  Navigator.of(context).pop(cancelappointment());
+                },
+                child: Text(
+                  "Yes",
+                  style: TextStyle(color: Colors.red, fontSize: 18),
+                ),
+              )
+            ],
+          );
+        },
+      );
+    },
+    child: Text(name),
+  );
 }

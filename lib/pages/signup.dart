@@ -26,6 +26,7 @@ class _SignupState extends State<Signup> {
     TextEditingController phoneNumbercontroler = TextEditingController();
     TextEditingController passwordcontroler = TextEditingController();
     TextEditingController confirmpasswordcontroler = TextEditingController();
+    TextEditingController addresscontroler = TextEditingController();
 
     double heightOfDevice = MediaQuery.of(context).size.height;
     bool _isLoading = false;
@@ -38,10 +39,12 @@ class _SignupState extends State<Signup> {
       RestApi rest = RestApi();
 
       await rest.createData(
-          firstNamecontroler.text.trim(),
-          lastNamecontroler.text.trim(),
-          emailcontroler.text.trim(),
-          phoneNumbercontroler.text);
+        firstNamecontroler.text.trim(),
+        lastNamecontroler.text.trim(),
+        emailcontroler.text.trim(),
+        phoneNumbercontroler.text,
+        addresscontroler.text.trim(),
+      );
 
       return Navigator.of(context).pop();
     }
@@ -111,6 +114,11 @@ class _SignupState extends State<Signup> {
                                       ),
                                       textfields(phoneNumbercontroler,
                                           "Enter phone number"),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      textfields(addresscontroler,
+                                          "Enter your address"),
                                       SizedBox(
                                         height: 10,
                                       ),
