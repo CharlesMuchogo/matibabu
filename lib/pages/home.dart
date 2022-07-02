@@ -255,7 +255,7 @@ Widget upcomingAppointments(String _uid) {
           .collection("Patient")
           .doc(_uid)
           .collection("My appointments")
-          .orderBy("Date", descending: true)
+          .orderBy("Date", descending: false)
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {

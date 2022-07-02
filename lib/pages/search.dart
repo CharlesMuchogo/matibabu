@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:matibabu/pages/doctor_information.dart';
 
 class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
@@ -12,7 +13,6 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   TextEditingController searchdoctorcontroler = TextEditingController();
-  //use  searchdoctorcontroler.text to retrieve contents of the searchbox
 
   @override
   Widget build(BuildContext context) {
@@ -24,47 +24,54 @@ class _SearchState extends State<Search> {
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
-        child: Center(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            Container(
-              padding: EdgeInsets.fromLTRB(115, 0, 0, 0),
-              height: 39,
-              width: 368,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Container(
+                    height: 39,
+                    width: 300,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(30),
+                      ),
+                      color: Color.fromRGBO(245, 242, 242, 10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0), //(x,y)
+                          blurRadius: 6.0,
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      width: 300,
+                      child: TextField(
+                        controller: searchdoctorcontroler,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            //labelText: 'Enter Name',
+                            hintText: 'Search for a doctor'),
+                      ),
+                    ),
+                  ),
                 ),
-                color: Color.fromRGBO(245, 242, 242, 10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey,
-                    offset: Offset(0.0, 1.0), //(x,y)
-                    blurRadius: 6.0,
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextField(
-                    controller: searchdoctorcontroler,
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        //labelText: 'Enter Name',
-                        hintText: 'Search for a doctor'),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      searchinfo(
-                          searchdoctorcontroler.text.trim().toLowerCase());
-                    },
-                    icon: Icon(Icons.search),
-                  )
-                ],
-              ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      searchdoctorcontroler.text =
+                          searchdoctorcontroler.text.toLowerCase().trim();
+                    });
+                  },
+                  icon: Icon(Icons.search),
+                )
+              ],
             ),
-          ]),
+            searchinfo(searchdoctorcontroler.text)
+          ],
         ),
       ),
     );
@@ -73,10 +80,7 @@ class _SearchState extends State<Search> {
 
 Widget searchinfo(String controler) {
   return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection("Doctor")
-          .where("Specialty", isEqualTo: controler)
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection("Doctor").snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -94,78 +98,77 @@ Widget searchinfo(String controler) {
           );
         }
 
-        return Container(
-          child: Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 630,
-                    child: ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) => Container(
-                        height: 100,
-                        width: 200,
-                        margin: EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15),
-                          ),
-                          color: Color.fromRGBO(245, 242, 242, 10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0.0, 1.0), //(x,y)
-                              blurRadius: 6.0,
-                            ),
-                          ],
+        return SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                ...(snapshot.data!.docs
+                    .where(
+                  (QueryDocumentSnapshot<Object?> element) =>
+                      element["specialty"].toString().contains(controler),
+                )
+                    .map(
+                  (QueryDocumentSnapshot<Object?> data) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      margin: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
                         ),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(snapshot
-                                    .data!.docs[index]
-                                    .get("Profile Photo")),
-                                radius: 32.0,
+                        color: Color.fromRGBO(245, 242, 242, 20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: Offset(0.0, 1.0),
+                            blurRadius: 6.0,
+                          ),
+                        ],
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DoctorInfo(
+                                ("Dr. " +
+                                    data["First Name"] +
+                                    " " +
+                                    data["Last Name"]),
+                                data["specialty"],
+                                data["id"],
+                                data["Profile Photo"],
                               ),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(
-                                    ("Dr. " +
-                                        snapshot.data!.docs[index]
-                                            .get("First Name")),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  Text(
-                                    snapshot.data!.docs[index].get("specialty"),
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 21, 121, 91),
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Icon(
-                                Icons.more_vert_sharp,
-                                color: Colors.teal,
-                              )
-                            ],
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: 35,
+                              backgroundImage:
+                                  NetworkImage(data["Profile Photo"]),
+                            ),
+                            title: Text("Dr. " +
+                                data["First Name"] +
+                                " " +
+                                data["Last Name"]),
+                            subtitle: Text(data["specialty"]),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
+                    );
+                  },
+                )),
+                // user_details("Email", Icons.email_outlined,
+                //   documentSnapshot["email"]),
+                // user_details("Name", Icons.person_outline,
+                //   documentSnapshot["name"]),
+                //user_details("phoneNumber", Icons.phone,
+                //    documentSnapshot["phone number"]),
+              ],
             ),
           ),
         );
