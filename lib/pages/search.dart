@@ -142,6 +142,7 @@ Widget searchinfo(String controler) {
                                 data["specialty"],
                                 data["id"],
                                 data["Profile Photo"],
+                                data["Description"],
                               ),
                             ),
                           );
@@ -165,12 +166,6 @@ Widget searchinfo(String controler) {
                     );
                   },
                 )),
-                // user_details("Email", Icons.email_outlined,
-                //   documentSnapshot["email"]),
-                // user_details("Name", Icons.person_outline,
-                //   documentSnapshot["name"]),
-                //user_details("phoneNumber", Icons.phone,
-                //    documentSnapshot["phone number"]),
               ],
             ),
           ),

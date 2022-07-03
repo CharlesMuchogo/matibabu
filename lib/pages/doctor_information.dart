@@ -4,20 +4,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launch/flutter_launch.dart';
 import 'package:matibabu/pages/bookingpage.dart';
-import 'package:url_launcher/url_launcher.dart';
+//import 'package:url_launcher/url_launcher.dart';
 
 class DoctorInfo extends StatelessWidget {
   final String doctorName;
   final String doctorSpecialty;
   final String doctorId;
+  final String doctorDescription;
   final String displayPhotoUrl;
 
   DoctorInfo(this.doctorName, this.doctorSpecialty, this.doctorId,
-      this.displayPhotoUrl);
+      this.displayPhotoUrl, this.doctorDescription);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           doctorName,
@@ -26,23 +28,14 @@ class DoctorInfo extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.teal,
       ),
-      body: doctor_info_body(context, doctorName, doctorId),
+      body: doctor_info_body(context, doctorName, doctorId, doctorDescription),
     );
   }
 }
 
-Widget doctor_info_body(
-    BuildContext context, String doctorName, String doctorid) {
+Widget doctor_info_body(BuildContext context, String doctorName,
+    String doctorid, String doctorDescription) {
   double heightOfDevice = MediaQuery.of(context).size.height;
-  String doctorDescription =
-      "I have 23 years of experience working as a dentist."
-      "I have worked in various famous hospitals such as "
-      "Nairobi hospital"
-      "Aga Khan Hospital"
-      "Karen hospital "
-      "Right now I’m the head of Dentistry department in"
-      "Kenyatta National Hospital."
-      "Feel free to contact me to book an appointment.  ";
 
   return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -98,30 +91,33 @@ Widget doctor_info_body(
                 child: Column(
                   children: [
                     Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Current Hospital: ",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            snapshot.data!.get("Current Hospital"),
+                            style: TextStyle(
+                              fontSize: 17,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
                       padding: const EdgeInsets.only(
                           right: 30, left: 30, top: 20, bottom: 20),
                       child: Text(
                         doctorDescription,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 18,
                         ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Current Hospital: ",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          snapshot.data!.get("Current Hospital"),
-                          style: TextStyle(
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
                     ),
                     Padding(
                       padding: const EdgeInsets.all(30.0),

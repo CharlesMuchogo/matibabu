@@ -178,15 +178,15 @@ Widget doctorInfoCard() {
                     ),
                     child: Center(
                       child: infocards(
-                        context,
-                        ("Dr. " +
-                            snapshot.data!.docs[index].get("First Name") +
-                            " " +
-                            snapshot.data!.docs[index].get("Last Name")),
-                        snapshot.data!.docs[index].get("Profile Photo"),
-                        snapshot.data!.docs[index].get("specialty"),
-                        snapshot.data!.docs[index].id,
-                      ),
+                          context,
+                          ("Dr. " +
+                              snapshot.data!.docs[index].get("First Name") +
+                              " " +
+                              snapshot.data!.docs[index].get("Last Name")),
+                          snapshot.data!.docs[index].get("Profile Photo"),
+                          snapshot.data!.docs[index].get("specialty"),
+                          snapshot.data!.docs[index].id,
+                          snapshot.data!.docs[index].get("Description")),
                     ),
                   ),
                 ),
@@ -198,7 +198,7 @@ Widget doctorInfoCard() {
 }
 
 Widget infocards(BuildContext context, String name, String displayPhoto,
-    String doctorSpecialty, String doctorId) {
+    String doctorSpecialty, String doctorId, String doctorDescription) {
   Widget profilePhoto(BuildContext context, String profileUrl) {
     if (profileUrl == "") {
       return CircleAvatar(
@@ -222,6 +222,7 @@ Widget infocards(BuildContext context, String name, String displayPhoto,
             doctorSpecialty,
             doctorId,
             displayPhoto,
+            doctorDescription,
           ),
         ),
       ); // navigate to Appointments page
