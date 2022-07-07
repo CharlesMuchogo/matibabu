@@ -14,6 +14,23 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   TextEditingController searchdoctorcontroler = TextEditingController();
 
+  void _printLatestValue() {
+    print("$searchdoctorcontroler.text");
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    searchdoctorcontroler.addListener(_printLatestValue);
+  }
+
+  @override
+  void dispose() {
+    searchdoctorcontroler.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,7 +125,10 @@ Widget searchinfo(String controler) {
                 ...(snapshot.data!.docs
                     .where(
                   (QueryDocumentSnapshot<Object?> element) =>
-                      element["specialty"].toString().contains(controler),
+                      element["specialty"]
+                          .toString()
+                          .toLowerCase()
+                          .contains(controler.toLowerCase()),
                 )
                     .map(
                   (QueryDocumentSnapshot<Object?> data) {

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:matibabu/GlobalComponents/restapi.dart';
 import 'package:matibabu/pages/updatedetails.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class profile extends StatefulWidget {
   @override
@@ -28,18 +29,40 @@ class _profileState extends State<profile> {
 
   var imageUrl;
 
-  _pickfromGallery(String imagename) async {
-    var pictureFile = await ImagePicker.platform
-        .getImageFromSource(source: ImageSource.gallery);
+  _pickImage(String imagename, ImageSource source) async {
+    var pictureFile =
+        await ImagePicker.platform.getImageFromSource(source: source);
 
-    setState(() {
-      imageFile = File(pictureFile!.path);
-    });
-    final _firebasestorage = FirebaseStorage.instance;
+    final firebasestorage = FirebaseStorage.instance;
 
-    if (imageFile != null) {
+    if (pictureFile!.path.isNotEmpty) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          });
+      var croppedImage = await ImageCropper.platform.cropImage(
+        sourcePath: pictureFile.path,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+        uiSettings: [
+          AndroidUiSettings(
+              toolbarColor: Colors.teal,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false)
+        ],
+        compressQuality: 100,
+        maxHeight: 700,
+        maxWidth: 700,
+        compressFormat: ImageCompressFormat.jpg,
+      );
+      setState(() {
+        imageFile = File(croppedImage!.path);
+      });
       //Upload to Firebase
-      var snapshot = await _firebasestorage
+      var snapshot = await firebasestorage
           .ref()
           .child('images/{$imagename}')
           .putFile(imageFile);
@@ -51,35 +74,8 @@ class _profileState extends State<profile> {
           .collection("Patient")
           .doc(FirebaseAuth.instance.currentUser?.uid)
           .update({"Profile Photo": imageUrl});
-    } else {
-      print('No Image Path Received');
-    }
-  }
 
-  _pickfromCamera(String imagename) async {
-    var pictureFile = await ImagePicker.platform
-        .getImageFromSource(source: ImageSource.camera);
-
-    setState(() {
-      imageFile = File(pictureFile!.path);
-    });
-
-    final _firebasestorage = FirebaseStorage.instance;
-    if (imageFile != null) {
-      //Upload to Firebase
-      var snapshot = await _firebasestorage
-          .ref()
-          .child('images/$imagename')
-          .putFile(imageFile);
-      var downloadUrl = await snapshot.ref.getDownloadURL();
-      setState(() {
-        imageUrl = downloadUrl;
-      });
-
-      FirebaseFirestore.instance
-          .collection("Patient")
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .update({"Profile Photo": imageUrl});
+      Navigator.pop(context);
     } else {
       print('No Image Path Received');
     }
@@ -104,14 +100,16 @@ class _profileState extends State<profile> {
               children: [
                 InkWell(
                   onTap: () {
-                    Navigator.of(context).pop(_pickfromGallery(imageName));
+                    Navigator.of(context)
+                        .pop(_pickImage(imageName, ImageSource.gallery));
                   },
                   child: Text("Gallery"),
                 ),
                 Padding(padding: EdgeInsets.all(8)),
                 InkWell(
                   onTap: () {
-                    Navigator.of(context).pop(_pickfromCamera(imageName));
+                    Navigator.of(context)
+                        .pop(_pickImage(imageName, ImageSource.camera));
                   },
                   child: Text("Camera"),
                 )
