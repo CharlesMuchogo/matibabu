@@ -23,6 +23,7 @@ class BookingsPage extends StatefulWidget {
 
 String _selectedDate = "";
 String formatedTime = "";
+String timeOfAppointment = "";
 
 class _BookingsPageState extends State<BookingsPage> {
   Future<void> _openDatePicker(BuildContext context) async {
@@ -61,6 +62,19 @@ class _BookingsPageState extends State<BookingsPage> {
 
   TimeOfDay selectedTime = TimeOfDay.now();
 
+  Widget selectTime(String time) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: ElevatedButton(
+          onPressed: () {
+            setState(() {
+              timeOfAppointment = time;
+            });
+          },
+          child: Text(time)),
+    );
+  }
+
   _selectTime(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
@@ -76,7 +90,7 @@ class _BookingsPageState extends State<BookingsPage> {
   }
 
   book() {
-    if ((formatedTime.isEmpty) || (_selectedDate.isEmpty)) {
+    if ((timeOfAppointment.isEmpty) || (_selectedDate.isEmpty)) {
       return Text(
         "Fill in all details",
         style: TextStyle(
@@ -84,8 +98,15 @@ class _BookingsPageState extends State<BookingsPage> {
       );
     } else {
       RestApi restObject = RestApi();
-      restObject.bookAppointment(_dropdownValue, formatedTime, _selectedDate,
-          widget.address, widget.doctorName, widget.doctorUid, context);
+      restObject.bookAppointment(
+          _dropdownValue,
+          timeOfAppointment,
+          _selectedDate,
+          widget.address,
+          widget.doctorName,
+          widget.doctorUid,
+          context);
+
       return Container();
     }
   }
@@ -143,61 +164,60 @@ class _BookingsPageState extends State<BookingsPage> {
           ),
           InkWell(
             onTap: () {
-              _selectTime(context);
-              // showModalBottomSheet(
-              //     context: context,
-              //     builder: (context) {
-              //       return GetAppointmentTime(
-              //           widget.doctorUid, context, _selectedDate);
+              // _selectTime(context);
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    // return GetAppointmentTime(
+                    //     widget.doctorUid, context, _selectedDate);
 
-              //       // Column(
-              //       //   crossAxisAlignment: CrossAxisAlignment.start,
-              //       //   mainAxisSize: MainAxisSize.min,
-              //       //   children: <Widget>[
-              //       //     Padding(
-              //       //       padding: const EdgeInsets.all(30.0),
-              //       //       child: Container(
-              //       //         child: Text("08:00 AM"),
-              //       //       ),
-              //       //     ),
-              //       //     Padding(
-              //       //       padding: const EdgeInsets.all(30.0),
-              //       //       child: Container(
-              //       //         child: Text("08:30 AM"),
-              //       //       ),
-              //       //     ),
-              //       //     Padding(
-              //       //       padding: const EdgeInsets.all(30.0),
-              //       //       child: Container(
-              //       //         child: Text("09:00 AM"),
-              //       //       ),
-              //       //     ),
-              //       //     Padding(
-              //       //       padding: const EdgeInsets.all(30.0),
-              //       //       child: Container(
-              //       //         child: Text("09:30 AM"),
-              //       //       ),
-              //       //     ),
-              //       //     Padding(
-              //       //       padding: const EdgeInsets.all(30.0),
-              //       //       child: Container(
-              //       //         child: Text("10:00 AM"),
-              //       //       ),
-              //       //     ),
-              //       //     Padding(
-              //       //       padding: const EdgeInsets.all(30.0),
-              //       //       child: Container(
-              //       //         child: Text("10:30 AM"),
-              //       //       ),
-              //       //     )
-              //       //   ],
-              //       // );
-              //     });
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SingleChildScrollView(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                children: [
+                                  selectTime("08:00 AM"),
+                                  selectTime("08:30 AM"),
+                                  selectTime("09:00 AM"),
+                                  selectTime("09:30 AM"),
+                                  selectTime("10:00 AM"),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  selectTime("10:30 AM"),
+                                  selectTime("11:00 AM"),
+                                  selectTime("11:30 AM"),
+                                  selectTime("12:00 PM"),
+                                  selectTime("12:30 PM"),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  selectTime("2:00 PM"),
+                                  selectTime("2:30 PM"),
+                                  selectTime("3:00 PM"),
+                                  selectTime("3:30 PM"),
+                                  selectTime("4:00 PM")
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+                  });
             },
             child: ListTile(
               leading: Icon(Icons.watch_later_outlined),
               title: Text("Select time of the Appointment"),
-              trailing: Text("${selectedTime.hour}:${selectedTime.minute}"),
+              trailing: Text(timeOfAppointment),
             ),
           ),
           ElevatedButton(

@@ -71,6 +71,13 @@ class RestApi {
           );
         });
     await _fire
+        .collection("Doctor")
+        .doc(doctorUid)
+        .collection("Schedule")
+        .doc(time)
+        .set({date: _uid});
+
+    await _fire
         .collection("Patient")
         .doc(_uid)
         .collection("My appointments")
