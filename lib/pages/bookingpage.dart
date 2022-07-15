@@ -75,20 +75,6 @@ class _BookingsPageState extends State<BookingsPage> {
     );
   }
 
-  _selectTime(BuildContext context) async {
-    final TimeOfDay? timeOfDay = await showTimePicker(
-      context: context,
-      initialTime: selectedTime,
-      initialEntryMode: TimePickerEntryMode.dial,
-    );
-    if (timeOfDay != null && timeOfDay != selectedTime) {
-      setState(() {
-        selectedTime = timeOfDay;
-        formatedTime = "${selectedTime.hour}:${selectedTime.minute}";
-      });
-    }
-  }
-
   book() {
     if ((timeOfAppointment.isEmpty) || (_selectedDate.isEmpty)) {
       return Text(
