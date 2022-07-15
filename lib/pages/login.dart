@@ -25,16 +25,13 @@ class _loginState extends State<login> {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, Widget>> widgetList = [
-      {'page': loginfunctionality(context, navigateToSignup)},
-      {'page': Signup()}
-    ];
-
-    return Scaffold(body: widgetList[_selectedPageIndex]['page']);
+    return Scaffold(body: loginfunctionality(context));
   }
 }
 
-Widget loginfunctionality(BuildContext context, Function navigation) {
+Widget loginfunctionality(
+  BuildContext context,
+) {
   double heightOfDevice = MediaQuery.of(context).size.height;
   TextEditingController emailcontroler = TextEditingController();
   TextEditingController passwordcontroler = TextEditingController();

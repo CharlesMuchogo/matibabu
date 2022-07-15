@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:internationalization/internationalization.dart';
@@ -13,11 +13,13 @@ class BookingsPage extends StatefulWidget {
   final String address;
   final String doctorName;
   final String doctorUid;
+  final String doctorspecialty;
 
   const BookingsPage(
     this.address,
     this.doctorName,
     this.doctorUid,
+    this.doctorspecialty,
   );
 }
 
@@ -85,7 +87,7 @@ class _BookingsPageState extends State<BookingsPage> {
     } else {
       RestApi restObject = RestApi();
       restObject.bookAppointment(
-          _dropdownValue,
+          widget.doctorspecialty,
           timeOfAppointment,
           _selectedDate,
           widget.address,
@@ -96,16 +98,6 @@ class _BookingsPageState extends State<BookingsPage> {
       return Container();
     }
   }
-
-  List<String> doctorSpecialties = [
-    "Therapy",
-    "Cardiology",
-    "Gaenacology",
-    "Neurology",
-    "Dentist"
-  ];
-
-  String _dropdownValue = "Therapy";
 
   @override
   Widget build(BuildContext context) {
@@ -121,24 +113,6 @@ class _BookingsPageState extends State<BookingsPage> {
           SizedBox(
             height: (MediaQuery.of(context).size.height * 0.15),
             child: Center(child: Text("")),
-          ),
-          ListTile(
-            leading: Icon(Icons.medical_services_outlined),
-            title: Text("Select the type of Appointment"),
-            trailing: DropdownButton(
-              value: _dropdownValue,
-              onChanged: (value) {
-                setState(() {
-                  _dropdownValue = value.toString();
-                });
-              },
-              items: doctorSpecialties.map((String items) {
-                return DropdownMenuItem(
-                  value: items,
-                  child: Text(items),
-                );
-              }).toList(),
-            ),
           ),
           InkWell(
             onTap: () => _openDatePicker(context),

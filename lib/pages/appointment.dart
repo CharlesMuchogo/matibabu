@@ -14,6 +14,7 @@ class AppointmentPage extends StatelessWidget {
   final String addressOfHospital;
   final String doctorName;
   final String status;
+
   const AppointmentPage(
     this.patientId,
     this.doctorUid,
@@ -50,8 +51,7 @@ class AppointmentPage extends StatelessWidget {
             .doc(doctorUid)
             .collection("My appointments")
             .doc(patientId)
-            .update({"Status": "Cancelled"});
-        print("Deleted");
+            .delete();
       }
     }
 
@@ -106,10 +106,12 @@ class AppointmentPage extends StatelessWidget {
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (context) => BookingsPage(
-                                      addressOfHospital,
-                                      doctorName,
-                                      doctorUid)),
+                                builder: (context) => BookingsPage(
+                                    typeOfConsultation,
+                                    addressOfHospital,
+                                    doctorName,
+                                    doctorUid),
+                              ),
                             );
                           },
                           child: Text("Reschedule appointment"))

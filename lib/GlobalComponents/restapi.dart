@@ -8,10 +8,16 @@ class RestApi {
   final FirebaseFirestore _fire = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<String> createData(String firstName, String lastName, String email,
-      String phoneNumber, String address) async {
+  Future createData(BuildContext context, String firstName, String lastName,
+      String email, String phoneNumber, String address) async {
     final User? _user = _auth.currentUser;
     final _uid = _user?.uid;
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        });
 
     await _fire.collection("Patient").doc(_uid).set(
       {
@@ -21,10 +27,11 @@ class RestApi {
         "Email": email,
         "Profile Photo": "https://bit.ly/3QR1Z8n",
         "Phone Number": phoneNumber,
-        "Adress": address,
+        "Address": address,
       },
     );
-    return "Signup successful";
+
+    Navigator.pop(context);
   }
 
   Future<void> readData() async {
@@ -70,12 +77,10 @@ class RestApi {
             child: CircularProgressIndicator(),
           );
         });
-    await _fire
-        .collection("Doctor")
-        .doc(doctorUid)
-        .collection("Schedule")
-        .doc(time)
-        .set({date: _uid});
+
+    print(
+      specialty + time + date + address + doctorName + doctorUid,
+    );
 
     await _fire
         .collection("Patient")
@@ -93,6 +98,7 @@ class RestApi {
         "Status": "Pending",
       },
     );
+
     await _fire
         .collection("Doctor")
         .doc(doctorUid)

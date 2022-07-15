@@ -11,9 +11,21 @@ class ResetPassword extends StatelessWidget {
           context: context,
           builder: (context) {
             return AlertDialog(
-              content: Text(
-                "Password reset email has been sent. Check your mail",
+              title: Text(
+                "Success",
+                style: TextStyle(color: Colors.green),
               ),
+              content: Text(
+                "Password reset email has been sent. Check your mail. If you don't see the mail in your inbox, check your spam folder",
+              ),
+              actions: [
+                MaterialButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Okay", style: TextStyle(color: Colors.blue)),
+                )
+              ],
             );
           });
     } on FirebaseAuthException catch (e) {
@@ -21,9 +33,18 @@ class ResetPassword extends StatelessWidget {
           context: context,
           builder: (context) {
             return AlertDialog(
+              title: Text("Failed!", style: TextStyle(color: Colors.red)),
               content: Text(
                 e.message.toString(),
               ),
+              actions: [
+                MaterialButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Okay", style: TextStyle(color: Colors.blue)),
+                )
+              ],
             );
           });
     }
@@ -32,20 +53,53 @@ class ResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Reset password"),
+        centerTitle: true,
+      ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: resetPassword,
-            ),
-            Padding(padding: EdgeInsets.all(10)),
-            ElevatedButton(
-                onPressed: () {
-                  _resetPassword(context);
-                },
-                child: Text("Reset Password"))
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Enter your email to reset password",
+                style: TextStyle(fontSize: 20),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(color: Colors.teal),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 1.5,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Colors.black45,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                  controller: resetPassword,
+                ),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    _resetPassword(context);
+                  },
+                  child: Text("Reset Password"))
+            ],
+          ),
         ),
       ),
     );

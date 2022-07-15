@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:matibabu/pages/appointment.dart';
 import 'package:matibabu/pages/doctor_information.dart';
+import 'package:matibabu/pages/doctorcartegories.dart';
 
 class home extends StatefulWidget {
   @override
@@ -95,21 +96,40 @@ class _homeState extends State<home> {
                       ),
                       upcomingAppointments(_uid!),
                       SizedBox(
-                        height: 33,
+                        height: 25,
                       ),
-                      textInfo('My favorite doctors'),
+                      textInfo('Top ratted specialists'),
                       SizedBox(
                         height: 10,
                       ),
                       doctorInfoCard(),
                       SizedBox(
-                        height: 33,
+                        height: 25,
                       ),
-                      textInfo('Top ratted specialist'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          textInfo('Doctor Cartegories'),
+                          MaterialButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DoctorCartegories()),
+                              ); // navigate to Appointments page
+                            },
+                            child: Text(
+                              "See all",
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.teal),
+                            ),
+                          )
+                        ],
+                      ),
                       SizedBox(
                         height: 10,
                       ),
-                      doctorInfoCard(),
+                      cartegoriesCard(),
                     ],
                   ),
                 ),
@@ -218,8 +238,8 @@ Widget infocards(BuildContext context, String name, String displayPhoto,
         context,
         MaterialPageRoute(
           builder: (context) => DoctorInfo(
-            name,
             doctorSpecialty,
+            name,
             doctorId,
             displayPhoto,
             doctorDescription,
@@ -415,4 +435,75 @@ Widget appointmentcards(
       )
     ],
   );
+}
+
+Widget cartegoriesCard() {
+  return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection("Doctor Cartegories")
+          .snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData) {
+          return Container(
+            height: 200,
+            width: 150,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (snapshot.hasError) {
+          return Text("An error occured. please try again later");
+        }
+
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  itemCount: snapshot.data!.size,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) => Container(
+                    height: 250,
+                    width: 180,
+                    margin: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5),
+                      ),
+                      color: Color.fromRGBO(245, 242, 242, 20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0), //(x,y)
+                          blurRadius: 6.0,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                        child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                snapshot.data!.docs[index]["DisplayPhoto"]),
+                            radius: 35,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(snapshot.data!.docs[index].id)
+                        ],
+                      ),
+                    )),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      });
 }

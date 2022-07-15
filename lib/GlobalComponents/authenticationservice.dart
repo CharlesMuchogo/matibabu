@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class AuthenticationService {
   final FirebaseAuth _auth;
@@ -18,14 +19,30 @@ class AuthenticationService {
     }
   }
 
-  Future<String> signUp(
-      {required String email, required String password}) async {
+  Future signUp(
+      {required BuildContext context,
+      required String email,
+      required String password}) async {
     try {
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       return 'Sign up successful';
     } on FirebaseAuth catch (e) {
-      return e.toString();
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Error !"),
+              content: Text(e.toString()),
+              actions: [
+                MaterialButton(
+                    child: Text("Okay"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    })
+              ],
+            );
+          });
     }
   }
 }

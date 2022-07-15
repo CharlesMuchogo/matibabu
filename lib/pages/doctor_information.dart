@@ -7,13 +7,13 @@ import 'package:matibabu/pages/bookingpage.dart';
 //import 'package:url_launcher/url_launcher.dart';
 
 class DoctorInfo extends StatelessWidget {
-  final String doctorName;
   final String doctorSpecialty;
+  final String doctorName;
   final String doctorId;
   final String doctorDescription;
   final String displayPhotoUrl;
 
-  DoctorInfo(this.doctorName, this.doctorSpecialty, this.doctorId,
+  DoctorInfo(this.doctorSpecialty, this.doctorName, this.doctorId,
       this.displayPhotoUrl, this.doctorDescription);
 
   @override
@@ -127,11 +127,10 @@ Widget doctor_info_body(BuildContext context, String doctorName,
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => BookingsPage(
-                                          snapshot.data!
-                                              .get("Current Hospital"),
-                                          doctorName,
-                                          doctorid,
-                                        )),
+                                        snapshot.data!.get("Current Hospital"),
+                                        doctorName,
+                                        doctorid,
+                                        snapshot.data!.get("specialty"))),
                               )),
                           child: Text("Book Appointment"),
                           style: ElevatedButton.styleFrom(

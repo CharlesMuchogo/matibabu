@@ -1,176 +1,49 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'package:matibabu/GlobalComponents/authenticationservice.dart';
-
-import 'package:matibabu/GlobalComponents/restapi.dart';
 import 'package:matibabu/pages/login.dart';
-import 'package:provider/provider.dart';
+import 'package:matibabu/pages/signupfields.dart';
 
-class Signup extends StatefulWidget {
-  @override
-  State<Signup> createState() => _SignupState();
-}
-
-class _SignupState extends State<Signup> {
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  final _formKey = GlobalKey<FormState>();
-
+class Signup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    TextEditingController firstNamecontroler = TextEditingController();
-    TextEditingController lastNamecontroler = TextEditingController();
-    TextEditingController emailcontroler = TextEditingController();
-    TextEditingController phoneNumbercontroler = TextEditingController();
-    TextEditingController passwordcontroler = TextEditingController();
-    TextEditingController confirmpasswordcontroler = TextEditingController();
-    TextEditingController addresscontroler = TextEditingController();
-
     double heightOfDevice = MediaQuery.of(context).size.height;
-    bool _isLoading = false;
-
-    void _input() async {
-      await context.read<AuthenticationService>().signUp(
-          email: emailcontroler.text.toLowerCase().trim(),
-          password: passwordcontroler.text.trim());
-
-      RestApi rest = RestApi();
-
-      await rest.createData(
-        firstNamecontroler.text.trim(),
-        lastNamecontroler.text.trim(),
-        emailcontroler.text.trim(),
-        phoneNumbercontroler.text,
-        addresscontroler.text.trim(),
-      );
-
-      return Navigator.of(context).pop();
-    }
 
     return Scaffold(
-      body: FutureBuilder<Object>(
-          future: null,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              setState(() {
-                _isLoading = true;
-              });
-              return MaterialApp(
-                home: Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return MaterialApp(
-                home: Scaffold(
-                  body: Center(child: Text("Error Occured")),
-                ),
-              );
-            }
-
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: heightOfDevice * 0.25,
-                    width: double.infinity,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        logo("Matibabu", 32, Colors.teal),
-                        logo("Health Is Wealth", 15, Colors.black)
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Container(
-                                  padding: EdgeInsets.all(20),
-                                  child: Column(
-                                    children: [
-                                      textfields(firstNamecontroler,
-                                          "Enter your first name"),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      textfields(lastNamecontroler,
-                                          "Enter your last name"),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      textfields(
-                                          emailcontroler, "Enter your email"),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      textfields(phoneNumbercontroler,
-                                          "Enter phone number"),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      textfields(addresscontroler,
-                                          "Enter your address"),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      passwordFields(
-                                          passwordcontroler, "Create password"),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      passwordFields(confirmpasswordcontroler,
-                                          "Confirm password"),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      SizedBox(
-                                        height: 42,
-                                        width: 196,
-                                        child: _isLoading
-                                            ? CircularProgressIndicator()
-                                            : ElevatedButton(
-                                                onPressed: _input,
-                                                child: Text("Sign up"),
-                                                style: ElevatedButton.styleFrom(
-                                                    primary: Color.fromRGBO(
-                                                        43, 147, 128, 20)),
-                                              ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+        body: SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(
+            height: heightOfDevice * 0.25,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                logo("Matibabu", 32, Colors.teal),
+                logo("Health Is Wealth", 15, Colors.black)
+              ],
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Container(
+                    padding: EdgeInsets.all(20), child: SignupFields()),
               ),
-            );
-          }),
-    );
+            ],
+          ),
+        ],
+      ),
+    ));
   }
 }
 
-Widget textfields(
-  TextEditingController textfieldcontroler,
-  String placeholder,
-) {
+Widget textfields(TextEditingController textfieldcontroler, String placeholder,
+    TextInputType keyboardtype) {
   return TextFormField(
+    keyboardType: keyboardtype,
     controller: textfieldcontroler,
     decoration: InputDecoration(
       labelText: placeholder,

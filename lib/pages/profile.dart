@@ -84,7 +84,7 @@ class _profileState extends State<profile> {
   Widget displayImage(String profileUrl) {
     return CircleAvatar(
       backgroundImage: NetworkImage(profileUrl),
-      radius: 70, //Image.file(imageFile),
+      radius: 80, //Image.file(imageFile),
       //radius: 70,
     );
   }
@@ -188,39 +188,48 @@ class _profileState extends State<profile> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: 25),
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      SizedBox(
-                        width: 25,
+                    SizedBox(
+                      width: 25,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                backgroundColor: Colors.grey[600],
+                                content: profilepictureview(
+                                    snapshot.data?.get("Profile Photo")),
+                              );
+                            });
+                      },
+                      child: Stack(
+                        children: [
+                          displayImage(snapshot.data?.get("Profile Photo")),
+                          Container(
+                            margin: EdgeInsets.only(
+                                left: MediaQuery.of(context).size.width * 0.28,
+                                top:
+                                    MediaQuery.of(context).size.height * 0.125),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.teal,
+                              radius: 25,
+                              child: InkWell(
+                                onTap: () {
+                                  imagepickerdialogue(
+                                      context, snapshot.data?.get("Email"));
+                                },
+                                child: Icon(
+                                  Icons.camera_alt_outlined,
+                                  size: 25,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                      InkWell(
-                          onTap: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    backgroundColor: Colors.grey[600],
-                                    content: profilepictureview(
-                                        snapshot.data?.get("Profile Photo")),
-                                  );
-                                });
-                          },
-                          child: displayImage(
-                              snapshot.data?.get("Profile Photo"))),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          imagepickerdialogue(
-                              context, snapshot.data?.get("Email"));
-                        },
-                        child: Icon(
-                          Icons.camera_alt_outlined,
-                          size: 30,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ]),
+                    ),
                     SizedBox(
                       height: 10,
                     ),
@@ -298,21 +307,21 @@ class _profileState extends State<profile> {
                       color: Colors.black,
                       thickness: 1,
                     ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.dark_mode,
-                        size: 30,
-                      ),
-                      title: Text('Dark Mode'),
-                      trailing: Switch(
-                        onChanged: toggleSwitch,
-                        value: isSwitched,
-                        activeColor: Colors.black,
-                        activeTrackColor: Colors.black54,
-                        inactiveThumbColor: Colors.white54,
-                        inactiveTrackColor: Colors.white,
-                      ),
-                    ),
+                    // ListTile(
+                    //   leading: Icon(
+                    //     Icons.dark_mode,
+                    //     size: 30,
+                    //   ),
+                    //   title: Text('Dark Mode'),
+                    //   trailing: Switch(
+                    //     onChanged: toggleSwitch,
+                    //     value: isSwitched,
+                    //     activeColor: Colors.black,
+                    //     activeTrackColor: Colors.black54,
+                    //     inactiveThumbColor: Colors.white54,
+                    //     inactiveTrackColor: Colors.white,
+                    //   ),
+                    // ),
                     InkWell(
                       onTap: () {
                         showDialog(
