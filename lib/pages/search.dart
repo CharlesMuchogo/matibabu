@@ -33,45 +33,50 @@ class _SearchState extends State<Search> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Container(
-                height: 39,
-                width: 300,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(30),
-                  ),
-                  color: Color.fromRGBO(245, 242, 242, 10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(0.0, 1.0), //(x,y)
-                      blurRadius: 6.0,
-                    ),
-                  ],
-                ),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 30),
                 child: Container(
-                  width: 300,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: TextField(
-                      onChanged: (val) => onSearch(val),
-                      controller: searchdoctorcontroler,
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.search),
-                          border: InputBorder.none,
-                          //labelText: 'Enter Name',
-                          hintText: 'Search for a doctor'),
+                  height: 39,
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(30),
+                    ),
+                    color: Color.fromARGB(246, 208, 203, 203),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey,
+                        offset: Offset(0.0, 1.0), //(x,y)
+                        blurRadius: 6.0,
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    width: 300,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        right: 30,
+                      ),
+                      child: TextField(
+                        onChanged: (val) => onSearch(val),
+                        controller: searchdoctorcontroler,
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            border: InputBorder.none,
+                            //labelText: 'Enter Name',
+                            hintText: 'Search for a doctor'),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-            searchinfo(searchdoctorcontroler.text)
+            Expanded(child: searchinfo(searchdoctorcontroler.text))
           ],
         ),
       ),
