@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:matibabu/pages/doctorcategoriesexpanded.dart';
 
 class DoctorCartegories extends StatelessWidget {
   const DoctorCartegories({Key? key}) : super(key: key);
@@ -8,7 +9,7 @@ class DoctorCartegories extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Doctor Cartegories"),
+        title: Text("Doctor Categories"),
         centerTitle: true,
       ),
       body: StreamBuilder(
@@ -58,6 +59,17 @@ class DoctorCartegories extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(5.0),
                           child: ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DoctorCategoriesExpanded(
+                                    category: snapshot.data!.docs[index].id,
+                                  ),
+                                ),
+                              ); // navigate to App
+                            },
                             leading: CircleAvatar(
                               backgroundImage: NetworkImage(
                                   snapshot.data!.docs[index]["DisplayPhoto"]),

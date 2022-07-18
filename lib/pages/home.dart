@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:matibabu/pages/appointment.dart';
 import 'package:matibabu/pages/doctor_information.dart';
 import 'package:matibabu/pages/doctorcartegories.dart';
+import 'package:matibabu/pages/doctorcategoriesexpanded.dart';
 
 class home extends StatefulWidget {
   @override
@@ -96,20 +97,20 @@ class _homeState extends State<home> {
                       ),
                       upcomingAppointments(_uid!),
                       SizedBox(
-                        height: 25,
+                        height: 15,
                       ),
-                      textInfo('Top ratted specialists'),
+                      textInfo('Top rated specialists'),
                       SizedBox(
                         height: 10,
                       ),
                       doctorInfoCard(),
                       SizedBox(
-                        height: 25,
+                        height: 15,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          textInfo('Doctor Cartegories'),
+                          textInfo('Doctor Categories'),
                           MaterialButton(
                             onPressed: () {
                               Navigator.push(
@@ -457,52 +458,58 @@ Widget cartegoriesCard() {
         }
 
         return SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 150,
-                child: ListView.builder(
-                  itemCount: snapshot.data!.size,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) => Container(
-                    height: 250,
-                    width: 180,
-                    margin: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(5),
-                      ),
-                      color: Color.fromRGBO(245, 242, 242, 20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 1.0), //(x,y)
-                          blurRadius: 6.0,
+          child: SizedBox(
+            height: 150,
+            child: ListView.builder(
+              itemCount: snapshot.data!.size,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => Container(
+                height: 250,
+                width: 180,
+                margin: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5),
+                  ),
+                  color: Color.fromRGBO(245, 242, 242, 20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      offset: Offset(0.0, 1.0), //(x,y)
+                      blurRadius: 6.0,
+                    ),
+                  ],
+                ),
+                child: Center(
+                    child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DoctorCategoriesExpanded(
+                              category: snapshot.data!.docs[index].id),
                         ),
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              snapshot.data!.docs[index]["DisplayPhoto"]),
+                          radius: 35,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(snapshot.data!.docs[index].id)
                       ],
                     ),
-                    child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                snapshot.data!.docs[index]["DisplayPhoto"]),
-                            radius: 35,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(snapshot.data!.docs[index].id)
-                        ],
-                      ),
-                    )),
                   ),
-                ),
-              )
-            ],
+                )),
+              ),
+            ),
           ),
         );
       });

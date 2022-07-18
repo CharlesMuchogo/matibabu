@@ -2,7 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:matibabu/GlobalComponents/restapi.dart';
+
 import 'package:matibabu/pages/doctor_information.dart';
 
 class Search extends StatefulWidget {
@@ -110,11 +110,11 @@ Widget searchinfo(String controler) {
               children: [
                 ...(snapshot.data!.docs
                     .where(
-                  (QueryDocumentSnapshot<Object?> element) =>
-                      element["First Name"]
-                          .toString()
-                          .toLowerCase()
-                          .contains(controler.toLowerCase()),
+                  (QueryDocumentSnapshot<Object?> element) => element
+                      .data()
+                      .toString()
+                      .toLowerCase()
+                      .contains(controler.toLowerCase()),
                 )
                     .map(
                   (QueryDocumentSnapshot<Object?> data) {
