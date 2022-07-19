@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
@@ -79,11 +81,22 @@ class _BookingsPageState extends State<BookingsPage> {
 
   book() {
     if ((timeOfAppointment.isEmpty) || (_selectedDate.isEmpty)) {
-      return Text(
-        "Fill in all details",
-        style: TextStyle(
-            color: Colors.red, fontSize: 20, fontWeight: FontWeight.bold),
-      );
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Error!"),
+              content: Text("Fill in all details"),
+              actions: [
+                MaterialButton(
+                  child: Text("Okay"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            );
+          });
     } else {
       RestApi restObject = RestApi();
       restObject.bookAppointment(
@@ -110,27 +123,36 @@ class _BookingsPageState extends State<BookingsPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(
-            height: (MediaQuery.of(context).size.height * 0.15),
-            child: Center(child: Text("")),
+          Center(
+            child: SizedBox(
+              height: (MediaQuery.of(context).size.height * 0.15),
+              child: Center(
+                child: Text(
+                  "Pick a date and time of your appointment",
+                  style: TextStyle(
+                      color: Colors.teal,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
           ),
           InkWell(
             onTap: () => _openDatePicker(context),
             child: ListTile(
               leading: Icon(Icons.calendar_month_outlined),
               title: Text("Select date of the Appointment"),
-              trailing: Text(_selectedDate),
+              trailing: Text(
+                _selectedDate,
+                style: TextStyle(color: Colors.teal),
+              ),
             ),
           ),
           InkWell(
             onTap: () {
-              // _selectTime(context);
               showModalBottomSheet(
                   context: context,
                   builder: (context) {
-                    // return GetAppointmentTime(
-                    //     widget.doctorUid, context, _selectedDate);
-
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
@@ -177,7 +199,10 @@ class _BookingsPageState extends State<BookingsPage> {
             child: ListTile(
               leading: Icon(Icons.watch_later_outlined),
               title: Text("Select time of the Appointment"),
-              trailing: Text(timeOfAppointment),
+              trailing: Text(
+                timeOfAppointment,
+                style: TextStyle(color: Colors.teal),
+              ),
             ),
           ),
           ElevatedButton(

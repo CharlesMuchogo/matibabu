@@ -440,9 +440,8 @@ Widget appointmentcards(
 
 Widget cartegoriesCard() {
   return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection("Doctor Cartegories")
-          .snapshots(),
+      stream:
+          FirebaseFirestore.instance.collection("Doctor Categoty").snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return Container(

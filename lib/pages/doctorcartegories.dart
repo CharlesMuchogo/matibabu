@@ -14,7 +14,7 @@ class DoctorCartegories extends StatelessWidget {
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection("Doctor Cartegories")
+            .collection("Doctor Categoty")
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
@@ -40,7 +40,7 @@ class DoctorCartegories extends StatelessWidget {
                     itemCount: snapshot.data!.size,
                     scrollDirection: Axis.vertical,
                     itemBuilder: (context, index) => Container(
-                      height: 100,
+                      height: 90,
                       margin: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(

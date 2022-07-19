@@ -44,10 +44,9 @@ class _DoctorCategoriesExpandedState extends State<DoctorCategoriesExpanded> {
                       )
                           .map(
                         (QueryDocumentSnapshot<Object?> data) {
-                          print(data.data());
                           return Container(
                             width: MediaQuery.of(context).size.width * 0.9,
-                            height: MediaQuery.of(context).size.height * 0.1,
+                            height: 90,
                             margin: EdgeInsets.all(20),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(

@@ -15,6 +15,8 @@ final Future<FirebaseApp> initialize = Firebase.initializeApp();
 
 class _loginState extends State<login> {
   int _selectedPageIndex = 0;
+  TextEditingController emailcontroler = TextEditingController();
+  TextEditingController passwordcontroler = TextEditingController();
 
   int navigateToSignup() {
     setState(() {
@@ -25,19 +27,18 @@ class _loginState extends State<login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: loginfunctionality(context));
+    return Scaffold(
+        body: loginfunctionality(context, emailcontroler, passwordcontroler));
   }
 }
 
 Widget loginfunctionality(
-  BuildContext context,
-) {
+    BuildContext context,
+    TextEditingController emailcontroler,
+    TextEditingController passwordcontroler) {
   double heightOfDevice = MediaQuery.of(context).size.height;
-  TextEditingController emailcontroler = TextEditingController();
-  TextEditingController passwordcontroler = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  bool waiting = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void navigate() {
     Navigator.push(
@@ -47,11 +48,20 @@ Widget loginfunctionality(
   }
 
   Future login() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
     try {
       await _auth.signInWithEmailAndPassword(
           email: emailcontroler.text.toLowerCase().trim(),
           password: passwordcontroler.text.trim());
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
       showDialog(
         context: context,
         builder: (context) {
@@ -141,15 +151,13 @@ Widget loginfunctionality(
                       SizedBox(
                         height: 42,
                         width: 196,
-                        child: waiting
-                            ? CircularProgressIndicator()
-                            : ElevatedButton(
-                                onPressed: login,
-                                child: Text("Login"),
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.teal,
-                                ),
-                              ),
+                        child: ElevatedButton(
+                          onPressed: login,
+                          child: Text("Login"),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.teal,
+                          ),
+                        ),
                       ),
                       SizedBox(
                         height: 35,
