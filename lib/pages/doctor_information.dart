@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launch/flutter_launch.dart';
 import 'package:matibabu/pages/bookingpage.dart';
+import 'package:url_launcher/url_launcher.dart';
 //import 'package:url_launcher/url_launcher.dart';
 
 class DoctorInfo extends StatelessWidget {
@@ -166,12 +167,12 @@ Widget doctor_info_body(BuildContext context, String doctorName,
                         onTap: () async {
                           String phoneNumber =
                               snapshot.data!.get("Phone Number");
-                          bool whatsapp =
-                              await FlutterLaunch.hasApp(name: "whatsapp");
+                          var whatsappUrl = "whatsapp://send?phone=" +
+                              phoneNumber +
+                              "&text=hello";
 
-                          if (whatsapp) {
-                            await FlutterLaunch.launchWhatsapp(
-                                phone: phoneNumber, message: "Hello");
+                          if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
+                            await launchUrl(Uri.parse(whatsappUrl));
                           }
                         },
                         child: ListTile(

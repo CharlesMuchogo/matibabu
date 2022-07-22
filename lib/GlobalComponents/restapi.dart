@@ -129,3 +129,8 @@ class RestApi {
     return "You have booked your appointment successfully";
   }
 }
+
+class UnavailableSpots {
+  String time;
+  UnavailableSpots({required this.time});
+}

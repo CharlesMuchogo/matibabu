@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
@@ -66,9 +64,94 @@ class _BookingsPageState extends State<BookingsPage> {
 
   TimeOfDay selectedTime = TimeOfDay.now();
 
+  Widget GetAppointmentTime(
+      String doctorUid, BuildContext context, String date) {
+    List appointmenttime = [];
+    List availableAppointments = [];
+    List doctorSchedule = [
+      "08:00 AM",
+      "08:30 AM",
+      "09:00 AM",
+      "09:30 AM",
+      "10:00 AM",
+      "10:30 AM",
+      "11:00 AM",
+      "11:30 AM",
+      "12:00 PM",
+      "12:30 PM",
+      "2:00 PM",
+      "2:30 PM",
+      "3:00 PM",
+      "3:30 PM",
+      "4:00 PM",
+    ];
+
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("Doctor")
+            .doc(doctorUid)
+            .collection("My appointments")
+            .orderBy("Date", descending: false)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Oops, an error occured. please try again"),
+            );
+          }
+          if (snapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Container(child: Text("No bookings found")),
+            );
+          }
+
+          for (int i = 0; i < snapshot.data!.size; i++) {
+            appointmenttime.add(snapshot.data!.docs[i]["Time"]);
+          }
+          availableAppointments.clear();
+          for (int i = 0; i < doctorSchedule.length; i++) {
+            if (!appointmenttime.contains(doctorSchedule[i])) {
+              availableAppointments.add(doctorSchedule[i]);
+            }
+          }
+
+          return InkWell(
+            onTap: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return GridView.count(
+                      mainAxisSpacing: 1,
+                      crossAxisCount: 4,
+                      children:
+                          List.generate(availableAppointments.length, (index) {
+                        return Center(
+                          child: selectTime(availableAppointments[index]),
+                        );
+                      }),
+                    );
+                  });
+            },
+            child: ListTile(
+              leading: Icon(Icons.watch_later_outlined),
+              title: Text("Select time of the Appointment"),
+              trailing: Text(
+                timeOfAppointment,
+                style: TextStyle(color: Colors.teal),
+              ),
+            ),
+          );
+        });
+  }
+
   Widget selectTime(String time) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.only(left: 0, right: 0),
       child: ElevatedButton(
           onPressed: () {
             setState(() {
@@ -107,9 +190,11 @@ class _BookingsPageState extends State<BookingsPage> {
           widget.doctorName,
           widget.doctorUid,
           context);
-
-      return Container();
     }
+    setState(() {
+      _selectedDate = "";
+      timeOfAppointment = "";
+    });
   }
 
   @override
@@ -148,63 +233,7 @@ class _BookingsPageState extends State<BookingsPage> {
               ),
             ),
           ),
-          InkWell(
-            onTap: () {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SingleChildScrollView(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                children: [
-                                  selectTime("08:00 AM"),
-                                  selectTime("08:30 AM"),
-                                  selectTime("09:00 AM"),
-                                  selectTime("09:30 AM"),
-                                  selectTime("10:00 AM"),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  selectTime("10:30 AM"),
-                                  selectTime("11:00 AM"),
-                                  selectTime("11:30 AM"),
-                                  selectTime("12:00 PM"),
-                                  selectTime("12:30 PM"),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  selectTime("2:00 PM"),
-                                  selectTime("2:30 PM"),
-                                  selectTime("3:00 PM"),
-                                  selectTime("3:30 PM"),
-                                  selectTime("4:00 PM")
-                                ],
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    );
-                  });
-            },
-            child: ListTile(
-              leading: Icon(Icons.watch_later_outlined),
-              title: Text("Select time of the Appointment"),
-              trailing: Text(
-                timeOfAppointment,
-                style: TextStyle(color: Colors.teal),
-              ),
-            ),
-          ),
+          GetAppointmentTime(widget.doctorUid, context, _selectedDate),
           ElevatedButton(
             onPressed: book,
             child: Text("Book Appointment"),
@@ -213,41 +242,4 @@ class _BookingsPageState extends State<BookingsPage> {
       ),
     );
   }
-}
-
-Widget GetAppointmentTime(String doctorUid, BuildContext context, String date) {
-  List appointmenttime = ["Today"];
-  return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection("Doctor")
-          .doc(doctorUid)
-          .collection("My Appointments")
-          .snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text("Oops, an error occured. please try again"),
-          );
-        }
-
-        snapshot.data!.docs
-            .where(
-          (QueryDocumentSnapshot<Object?> element) =>
-              element["Date"].toString().contains(""),
-        )
-            .map((QueryDocumentSnapshot<Object?> data) {
-          print(data["Time"]);
-          appointmenttime.add(data["Time"]);
-        });
-
-        print(appointmenttime.length);
-        return Column(
-          children: appointmenttime.map((e) => Text(e)).toList(),
-        );
-      });
 }
