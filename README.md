@@ -1,1 +1,2 @@
-![Screenshot_20220710-124724](https://user-images.githubusercontent.com/58371052/180502274-861b6428-2aee-4878-8fb7-73774e73b651.jpg)
+![photo_2022-07-22_21-35-13](https://user-images.githubusercontent.com/58371052/180502503-d715278c-fcb5-4a9a-b8d4-29072f0d3188.jpg)
+
