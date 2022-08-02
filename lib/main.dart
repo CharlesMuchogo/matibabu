@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:matibabu/GlobalComponents/authenticationservice.dart';
 import 'package:matibabu/GlobalComponents/autheticationwrapper.dart';
 
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart'; MediaQuery.of(context).size.height * 0.1
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
