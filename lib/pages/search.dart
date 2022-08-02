@@ -120,7 +120,7 @@ Widget searchinfo(String controler) {
                   (QueryDocumentSnapshot<Object?> data) {
                     return Container(
                       width: MediaQuery.of(context).size.width * 0.9,
-                      height: MediaQuery.of(context).size.height * 0.1,
+                      height:100,
                       margin: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(
