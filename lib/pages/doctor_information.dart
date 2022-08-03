@@ -2,10 +2,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_launch/flutter_launch.dart';
+
 import 'package:matibabu/pages/bookingpage.dart';
 import 'package:url_launcher/url_launcher.dart';
-//import 'package:url_launcher/url_launcher.dart';
 
 class DoctorInfo extends StatelessWidget {
   final String doctorSpecialty;
