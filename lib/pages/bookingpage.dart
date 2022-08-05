@@ -104,11 +104,6 @@ class _BookingsPageState extends State<BookingsPage> {
               child: Text("Oops, an error occured. please try again"),
             );
           }
-          if (snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Container(child: Text("No bookings found")),
-            );
-          }
 
           for (int i = 0; i < snapshot.data!.size; i++) {
             appointmenttime.add(snapshot.data!.docs[i]["Time"]);
