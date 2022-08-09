@@ -168,7 +168,7 @@ class _SignupState extends State<Signup> {
                         ),
                         SizedBox(
                           height: 42,
-                          width: 196,
+                          width: MediaQuery.of(context).size.width * 0.75,
                           child: _isLoading
                               ? CircularProgressIndicator()
                               : ElevatedButton(

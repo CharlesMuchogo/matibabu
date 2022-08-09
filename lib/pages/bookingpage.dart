@@ -91,7 +91,7 @@ class _BookingsPageState extends State<BookingsPage> {
             .collection("Doctor")
             .doc(doctorUid)
             .collection("My appointments")
-            .orderBy("Date", descending: false)
+            .where("Date", isEqualTo: date)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
