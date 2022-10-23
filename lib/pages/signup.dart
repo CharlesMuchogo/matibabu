@@ -29,6 +29,9 @@ class _SignupState extends State<Signup> {
     bool _isLoading = false;
 
     void _input() async {
+      setState(() {
+        _isLoading = true;
+      });
       if ((firstNamecontroler.text.trim().isEmpty ||
           lastNamecontroler.text.trim().isEmpty ||
           emailcontroler.text.trim().isEmpty ||
@@ -36,6 +39,9 @@ class _SignupState extends State<Signup> {
           passwordcontroler.text.trim().isEmpty ||
           confirmpasswordcontroler.text.trim().isEmpty ||
           addresscontroler.text.trim().isEmpty)) {
+        setState(() {
+          _isLoading = false;
+        });
         return showDialog(
             context: context,
             builder: (context) {
@@ -53,6 +59,9 @@ class _SignupState extends State<Signup> {
             });
       } else {
         if (passwordcontroler.text != confirmpasswordcontroler.text) {
+          setState(() {
+            _isLoading = false;
+          });
           return showDialog(
               context: context,
               builder: (context) {
@@ -85,107 +94,81 @@ class _SignupState extends State<Signup> {
           addresscontroler.text.trim(),
         );
       }
+      setState(() {
+        _isLoading = false;
+      });
 
       return Navigator.of(context).pop();
     }
 
     return Scaffold(
-      body: FutureBuilder<Object>(
-          future: null,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              setState(() {
-                _isLoading = true;
-              });
-              return MaterialApp(
-                home: Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return MaterialApp(
-                home: Scaffold(
-                  body: Center(child: Text("Error Occured")),
-                ),
-              );
-            }
-
-            return Column(
-              children: [
-                SizedBox(
-                  height: heightOfDevice * 0.25,
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      logo("Matibabu", 32, Colors.teal),
-                      logo("Health Is Wealth", 15, Colors.black)
-                    ],
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    height: heightOfDevice * 0.75,
-                    padding: EdgeInsets.all(20),
-                    child: ListView(
-                      children: [
-                        textfields(firstNamecontroler, "Enter your first name",
-                            TextInputType.name),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        textfields(lastNamecontroler, "Enter your last name",
-                            TextInputType.name),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        textfields(emailcontroler, "Enter your email",
-                            TextInputType.emailAddress),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        textfields(phoneNumbercontroler, "Enter phone number",
-                            TextInputType.phone),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        textfields(addresscontroler, "Enter your address",
-                            TextInputType.name),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        passwordFields(passwordcontroler, "Create password"),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        passwordFields(
-                            confirmpasswordcontroler, "Confirm password"),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          height: 42,
-                          width: MediaQuery.of(context).size.width * 0.75,
-                          child: _isLoading
-                              ? CircularProgressIndicator()
-                              : ElevatedButton(
-                                  onPressed: _input,
-                                  child: Text("Sign up"),
-                                  style: ElevatedButton.styleFrom(
-                                      primary:
-                                          Color.fromRGBO(43, 147, 128, 20)),
-                                ),
-                        )
-                      ],
+      body: Container(
+        height: heightOfDevice,
+        padding: EdgeInsets.all(20),
+        child: ListView(
+          children: [
+            SizedBox(
+              height: heightOfDevice * 0.25,
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // logo("Matibabu", 32, Colors.teal),
+                  // logo("Health Is Wealth", 15, Colors.black)
+                ],
+              ),
+            ),
+            textfields(firstNamecontroler, "Enter your first name",
+                TextInputType.name),
+            SizedBox(
+              height: 10,
+            ),
+            textfields(
+                lastNamecontroler, "Enter your last name", TextInputType.name),
+            SizedBox(
+              height: 10,
+            ),
+            textfields(
+                emailcontroler, "Enter your email", TextInputType.emailAddress),
+            SizedBox(
+              height: 10,
+            ),
+            textfields(phoneNumbercontroler, "Enter phone number",
+                TextInputType.phone),
+            SizedBox(
+              height: 10,
+            ),
+            textfields(
+                addresscontroler, "Enter your address", TextInputType.name),
+            SizedBox(
+              height: 10,
+            ),
+            passwordFields(passwordcontroler, "Create password"),
+            SizedBox(
+              height: 10,
+            ),
+            passwordFields(confirmpasswordcontroler, "Confirm password"),
+            SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              height: 42,
+              width: MediaQuery.of(context).size.width * 0.75,
+              child: _isLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _input,
+                      child: Text("Sign up"),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
                     ),
-                  ),
-                ),
-              ],
-            );
-          }),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

@@ -13,6 +13,9 @@ class AuthenticationWrapper extends StatelessWidget {
     final firebaseUser = context.watch<User?>();
 
     if (firebaseUser != null) {
+      if (!firebaseUser.emailVerified) {
+        firebaseUser.sendEmailVerification();
+      }
       return BottomBarScreen();
     } else {
       return login();
