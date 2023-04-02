@@ -18,7 +18,7 @@ class AuthenticationService {
       return e.toString();
     }
   }
-
+ 
   Future signUp(
       {required BuildContext context,
       required String email,

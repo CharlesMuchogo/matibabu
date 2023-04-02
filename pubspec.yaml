@@ -48,6 +48,7 @@ dependencies:
   image_cropper: ^3.0.0
   flutter_native_splash: ^2.2.4
   connectivity_plus: ^3.0.1
+  font_awesome_flutter: ^10.4.0
 
 flutter_native_splash:
  

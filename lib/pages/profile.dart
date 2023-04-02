@@ -270,7 +270,7 @@ class _profileState extends State<profile> {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.grey[200],
+                        backgroundColor: Colors.grey[200],
                       ),
                       onPressed: () {
                         Navigator.of(context).push(

@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:matibabu/pages/bookingpage.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -149,14 +150,20 @@ Widget doctor_info_body(BuildContext context, String doctorName,
                     Padding(
                       padding: const EdgeInsets.only(left: 60),
                       child: ListTile(
-                        leading: Icon(Icons.phone_outlined),
+                        onTap: ()async{
+                          await launchUrl(Uri.parse("tel://${snapshot.data!.get("Phone Number")}"));
+                          },
+                        leading: Icon(Icons.phone_outlined, color: Colors.teal,),
                         title: Text(snapshot.data!.get("Phone Number")),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 60),
                       child: ListTile(
-                        leading: Icon(Icons.email_outlined),
+                        onTap: ()async{
+                          await launchUrl(Uri.parse("mailto:${snapshot.data!.get("Email")}"));
+                        },
+                        leading: Icon(Icons.email_outlined, color: Colors.teal,),
                         title: Text(snapshot.data!.get("Email")),
                       ),
                     ),
@@ -166,6 +173,10 @@ Widget doctor_info_body(BuildContext context, String doctorName,
                         onTap: () async {
                           String phoneNumber =
                               snapshot.data!.get("Phone Number");
+
+                          if (phoneNumber.startsWith("07")) {
+                            phoneNumber = "+254" + phoneNumber.substring(1);
+                          }
                           var whatsappUrl = "whatsapp://send?phone=" +
                               phoneNumber +
                               "&text=hello";
@@ -175,8 +186,8 @@ Widget doctor_info_body(BuildContext context, String doctorName,
                           }
                         },
                         child: ListTile(
-                          leading: Icon(
-                            Icons.whatsapp_outlined,
+                          leading:  FaIcon(
+                            FontAwesomeIcons.whatsapp,
                             color: Colors.green,
                           ),
                           title: Text(snapshot.data!.get("Phone Number")),
