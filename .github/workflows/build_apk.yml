@@ -3,7 +3,7 @@ name: Build and Upload Android App to Firebase Distribution
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build_and_upload:
