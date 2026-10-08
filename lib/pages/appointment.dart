@@ -130,7 +130,7 @@ class AppointmentPage extends StatelessWidget {
 Widget cancelAppointment(
     String name, Function cancelappointment, BuildContext context) {
   return ElevatedButton(
-    style: ElevatedButton.styleFrom(primary: Colors.red),
+    style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
     onPressed: () {
       showDialog(
         context: context,

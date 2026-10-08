@@ -31,7 +31,7 @@ class _profileState extends State<profile> {
 
   _pickImage(String imagename, ImageSource source) async {
     var pictureFile =
-        await ImagePicker.platform.getImageFromSource(source: source);
+        await ImagePicker().pickImage(source: source);
 
     final firebasestorage = FirebaseStorage.instance;
 
@@ -43,7 +43,7 @@ class _profileState extends State<profile> {
               child: CircularProgressIndicator(),
             );
           });
-      var croppedImage = await ImageCropper.platform.cropImage(
+      var croppedImage = await ImageCropper().cropImage(
         sourcePath: pictureFile.path,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
         uiSettings: [

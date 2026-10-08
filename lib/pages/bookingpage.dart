@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:internationalization/internationalization.dart';
+import 'package:intl/intl.dart';
 import 'package:matibabu/GlobalComponents/restapi.dart';
 
 class BookingsPage extends StatefulWidget {
