@@ -1,30 +1,55 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
+import 'package:matibabu/models/appointment.dart';
 
-import 'package:matibabu/main.dart';
+Appointment _appt(DateTime day, String time, {String status = "Pending"}) =>
+    Appointment(
+      id: "x",
+      doctorId: "d",
+      doctorName: "Dr. Test",
+      consultation: "Dentist",
+      address: "Nairobi",
+      date: DateFormat.yMMMd("en_US").format(day),
+      time: time,
+      status: status,
+    );
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MaterialApp());
+  test('parses stored date and time strings', () {
+    final a = _appt(DateTime(2026, 10, 8), "2:30 PM");
+    expect(a.dateTime, DateTime(2026, 10, 8, 14, 30));
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  test('classifies upcoming, completed and cancelled', () {
+    final future = DateTime.now().add(const Duration(days: 3));
+    final past = DateTime.now().subtract(const Duration(days: 3));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    final upcoming = _appt(future, "09:00 AM");
+    expect(upcoming.isUpcoming, isTrue);
+    expect(upcoming.displayStatus, "Pending");
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    final completed = _appt(past, "09:00 AM", status: "Confirmed");
+    expect(completed.isCompleted, isTrue);
+    expect(completed.displayStatus, "Completed");
+
+    final cancelled = _appt(future, "09:00 AM", status: "Cancelled");
+    expect(cancelled.isCancelled, isTrue);
+    expect(cancelled.isUpcoming, isFalse);
+    expect(cancelled.isCompleted, isFalse);
+  });
+
+  test('unparseable dates are neither upcoming nor crash', () {
+    const a = Appointment(
+      id: "x",
+      doctorId: "d",
+      doctorName: "n",
+      consultation: "c",
+      address: "a",
+      date: "garbage",
+      time: "??",
+      status: "Pending",
+    );
+    expect(a.dateTime, isNull);
+    expect(a.isUpcoming, isFalse);
   });
 }

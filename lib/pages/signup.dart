@@ -1,237 +1,154 @@
-// ignore_for_file: prefer_const_constructors
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:matibabu/GlobalComponents/authenticationservice.dart';
-
 import 'package:matibabu/GlobalComponents/restapi.dart';
-import 'package:matibabu/pages/login.dart';
+import 'package:matibabu/theme/app_theme.dart';
+import 'package:matibabu/widgets/common.dart';
 import 'package:provider/provider.dart';
 
 class Signup extends StatefulWidget {
+  const Signup({super.key});
+
   @override
   State<Signup> createState() => _SignupState();
 }
 
 class _SignupState extends State<Signup> {
-  TextEditingController firstNamecontroler = TextEditingController();
-  TextEditingController lastNamecontroler = TextEditingController();
-  TextEditingController emailcontroler = TextEditingController();
-  TextEditingController phoneNumbercontroler = TextEditingController();
-  TextEditingController passwordcontroler = TextEditingController();
-  TextEditingController confirmpasswordcontroler = TextEditingController();
-
-  TextEditingController addresscontroler = TextEditingController();
+  final _firstName = TextEditingController();
+  final _lastName = TextEditingController();
+  final _email = TextEditingController();
+  final _phone = TextEditingController();
+  final _address = TextEditingController();
+  final _password = TextEditingController();
+  final _confirmPassword = TextEditingController();
+  bool _loading = false;
 
   @override
-  Widget build(BuildContext context) {
-    double heightOfDevice = MediaQuery.of(context).size.height;
-    bool _isLoading = false;
+  void dispose() {
+    for (final c in [
+      _firstName,
+      _lastName,
+      _email,
+      _phone,
+      _address,
+      _password,
+      _confirmPassword
+    ]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
 
-    void _input() async {
-      setState(() {
-        _isLoading = true;
-      });
-      if ((firstNamecontroler.text.trim().isEmpty ||
-          lastNamecontroler.text.trim().isEmpty ||
-          emailcontroler.text.trim().isEmpty ||
-          phoneNumbercontroler.text.trim().isEmpty ||
-          passwordcontroler.text.trim().isEmpty ||
-          confirmpasswordcontroler.text.trim().isEmpty ||
-          addresscontroler.text.trim().isEmpty)) {
-        setState(() {
-          _isLoading = false;
-        });
-        return showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text("Error !"),
-                content: Text("Fill in all the details"),
-                actions: [
-                  MaterialButton(
-                      child: Text("Okay"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      })
-                ],
-              );
-            });
-      } else {
-        if (passwordcontroler.text != confirmpasswordcontroler.text) {
-          setState(() {
-            _isLoading = false;
-          });
-          return showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text("Error !"),
-                  content: Text("Passwords do not match"),
-                  actions: [
-                    MaterialButton(
-                        child: Text("Okay"),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        })
-                  ],
-                );
-              });
-        }
-        await context.read<AuthenticationService>().signUp(
-            context: context,
-            email: emailcontroler.text.toLowerCase().trim(),
-            password: passwordcontroler.text.trim());
-
-        RestApi rest = RestApi();
-
-        await rest.createData(
-          context,
-          firstNamecontroler.text.trim(),
-          lastNamecontroler.text.trim(),
-          emailcontroler.text.trim(),
-          phoneNumbercontroler.text,
-          addresscontroler.text.trim(),
-        );
-      }
-      setState(() {
-        _isLoading = false;
-      });
-
-      return Navigator.of(context).pop();
+  Future<void> _signUp() async {
+    final fields = [
+      _firstName,
+      _lastName,
+      _email,
+      _phone,
+      _address,
+      _password,
+      _confirmPassword
+    ];
+    if (fields.any((c) => c.text.trim().isEmpty)) {
+      showMessageDialog(context, "Missing details", "Fill in all the details.");
+      return;
+    }
+    if (_password.text != _confirmPassword.text) {
+      showMessageDialog(
+          context, "Check your password", "Passwords do not match.");
+      return;
     }
 
-    return Scaffold(
-      body: Container(
-        height: heightOfDevice,
-        padding: EdgeInsets.all(20),
-        child: ListView(
-          children: [
-            SizedBox(
-              height: heightOfDevice * 0.25,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // logo("Matibabu", 32, Colors.teal),
-                  // logo("Health Is Wealth", 15, Colors.black)
-                ],
-              ),
-            ),
-            textfields(firstNamecontroler, "Enter your first name",
-                TextInputType.name),
-            SizedBox(
-              height: 10,
-            ),
-            textfields(
-                lastNamecontroler, "Enter your last name", TextInputType.name),
-            SizedBox(
-              height: 10,
-            ),
-            textfields(
-                emailcontroler, "Enter your email", TextInputType.emailAddress),
-            SizedBox(
-              height: 10,
-            ),
-            textfields(phoneNumbercontroler, "Enter phone number",
-                TextInputType.phone),
-            SizedBox(
-              height: 10,
-            ),
-            textfields(
-                addresscontroler, "Enter your address", TextInputType.name),
-            SizedBox(
-              height: 10,
-            ),
-            passwordFields(passwordcontroler, "Create password"),
-            SizedBox(
-              height: 10,
-            ),
-            passwordFields(confirmpasswordcontroler, "Confirm password"),
-            SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-              height: 42,
-              width: MediaQuery.of(context).size.width * 0.75,
-              child: _isLoading
-                  ? CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _input,
-                      child: Text("Sign up"),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromRGBO(43, 147, 128, 20)),
-                    ),
-            )
-          ],
-        ),
+    setState(() => _loading = true);
+    final navigator = Navigator.of(context);
+    try {
+      await context.read<AuthenticationService>().signUp(
+            email: _email.text.toLowerCase().trim(),
+            password: _password.text.trim(),
+          );
+      await RestApi().createData(
+        _firstName.text.trim(),
+        _lastName.text.trim(),
+        _email.text.trim(),
+        _phone.text.trim(),
+        _address.text.trim(),
+      );
+      navigator.pop();
+    } on FirebaseException catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      showMessageDialog(context, "Couldn't sign up", e.message ?? e.code);
+    }
+  }
+
+  Widget _field(TextEditingController controller, String label, IconData icon,
+      {TextInputType? keyboard, bool obscure = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboard,
+        obscureText: obscure,
+        textInputAction: TextInputAction.next,
+        textCapitalization: keyboard == TextInputType.name
+            ? TextCapitalization.words
+            : TextCapitalization.none,
+        decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
       ),
     );
   }
-}
 
-Widget textfields(TextEditingController textfieldcontroler, String placeholder,
-    TextInputType keboardtype) {
-  return TextFormField(
-    keyboardType: keboardtype,
-    controller: textfieldcontroler,
-    decoration: InputDecoration(
-      labelText: placeholder,
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: Colors.teal),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
+        children: [
+          const AuthHeader(
+            title: "Create account",
+            subtitle: "Book and track appointments with top specialists.",
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          const GoogleSignInButton(),
+          const OrDivider(),
+          Row(
+            children: [
+              Expanded(
+                  child: _field(_firstName, "First name", Icons.person_outline,
+                      keyboard: TextInputType.name)),
+              const SizedBox(width: AppSpacing.sm + 4),
+              Expanded(
+                  child: _field(_lastName, "Last name", Icons.person_outline,
+                      keyboard: TextInputType.name)),
+            ],
+          ),
+          _field(_email, "Email", Icons.email_outlined,
+              keyboard: TextInputType.emailAddress),
+          _field(_phone, "Phone number", Icons.phone_outlined,
+              keyboard: TextInputType.phone),
+          _field(_address, "Address", Icons.location_on_outlined,
+              keyboard: TextInputType.streetAddress),
+          _field(_password, "Password", Icons.lock_outline, obscure: true),
+          _field(_confirmPassword, "Confirm password", Icons.lock_outline,
+              obscure: true),
+          const SizedBox(height: AppSpacing.sm),
+          LoadingButton(
+              label: "Create account", loading: _loading, onPressed: _signUp),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Already have an account?"),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Sign in"),
+              ),
+            ],
+          ),
+        ],
       ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(
-          color: Colors.black,
-          width: 1.5,
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          color: Colors.black45,
-          width: 1.5,
-        ),
-      ),
-    ),
-  );
-}
-
-Widget passwordFields(
-  TextEditingController textfieldcontroler,
-  String placeholder,
-) {
-  return TextFormField(
-    controller: textfieldcontroler,
-    obscureText: true,
-
-    // ignore: prefer_const_constructors
-    decoration: InputDecoration(
-      labelText: placeholder,
-      //hintText: placeholder
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: Colors.teal),
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(
-          color: Colors.black,
-          width: 1.5,
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          color: Colors.black45,
-          width: 1.5,
-        ),
-      ),
-    ),
-  );
+    );
+  }
 }

@@ -1,21 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/material.dart';
 import 'package:matibabu/pages/login.dart';
 import 'package:provider/provider.dart';
 
 import '../pages/navbar.dart';
 
 class AuthenticationWrapper extends StatelessWidget {
-  const AuthenticationWrapper({Key? key}) : super(key: key);
+  const AuthenticationWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
-      
+
     if (firebaseUser != null) {
-      return BottomBarScreen();
+      return const BottomBarScreen();
     } else {
-      return login();
+      return const LoginPage();
     }
   }
 }

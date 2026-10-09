@@ -1,205 +1,216 @@
-// ignore_for_file: unnecessary_new, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import 'package:matibabu/pages/bookingpage.dart';
+import 'package:matibabu/theme/app_theme.dart';
+import 'package:matibabu/widgets/common.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DoctorInfo extends StatelessWidget {
-  final String doctorSpecialty;
-  final String doctorName;
-  final String doctorId;
-  final String doctorDescription;
-  final String displayPhotoUrl;
+String doctorDisplayName(Map<String, dynamic> data) =>
+    "Dr. ${data["First Name"] ?? ""} ${data["Last Name"] ?? ""}".trim();
 
-  DoctorInfo(this.doctorSpecialty, this.doctorName, this.doctorId,
-      this.displayPhotoUrl, this.doctorDescription);
+/// A doctor row that opens the doctor's profile when tapped.
+class DoctorListTile extends StatelessWidget {
+  final DocumentSnapshot doc;
+  const DoctorListTile(this.doc, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          doctorName,
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
+    final data = (doc.data() as Map<String, dynamic>?) ?? {};
+    return DoctorTile(
+      name: doctorDisplayName(data),
+      specialty: data["specialty"] ?? "",
+      photoUrl: data["Profile Photo"],
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => DoctorInfo(doctorId: doc.id)),
       ),
-      body: doctor_info_body(context, doctorName, doctorId, doctorDescription),
     );
   }
 }
 
-Widget doctor_info_body(BuildContext context, String doctorName,
-    String doctorid, String doctorDescription) {
-  double heightOfDevice = MediaQuery.of(context).size.height;
+class DoctorInfo extends StatelessWidget {
+  final String doctorId;
 
-  return StreamBuilder(
+  const DoctorInfo({super.key, required this.doctorId});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection("Doctor")
-          .doc(doctorid)
+          .doc(doctorId)
           .snapshots(),
-      builder: (context,
-          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
-        if (!snapshot.hasData) {
-          return Container(
-            height: 200,
-            width: 300,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
+      builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Text("Oops. An error occured. Try again later");
+          return Scaffold(
+              appBar: AppBar(), body: const Center(child: ErrorView()));
         }
+        final data = snapshot.data?.data();
+        if (data == null) {
+          return Scaffold(appBar: AppBar(), body: const LoadingView());
+        }
+        return _DoctorInfoBody(doctorId: doctorId, data: data);
+      },
+    );
+  }
+}
 
-        Widget displayPhoto() {
-          if (snapshot.data!.get("Profile Photo") == "") {
-            return Container(
-              height: heightOfDevice / 4,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage("assets/images/emptyprofile.png"),
-                ),
-              ),
-            );
-          }
-          return Container(
-            height: heightOfDevice / 4,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(snapshot.data!.get("Profile Photo")),
-              ),
+class _DoctorInfoBody extends StatelessWidget {
+  final String doctorId;
+  final Map<String, dynamic> data;
+  const _DoctorInfoBody({required this.doctorId, required this.data});
+
+  String get _phone => data["Phone Number"] ?? "";
+  String get _email => data["Email"] ?? "";
+  String get _hospital => data["Current Hospital"] ?? "";
+  String get _specialty => data["specialty"] ?? "";
+
+  Future<void> _openWhatsApp() async {
+    var phone = _phone.replaceAll(RegExp(r"[^0-9+]"), "");
+    if (phone.startsWith("0")) phone = "+254${phone.substring(1)}";
+    final uri = Uri.parse("whatsapp://send?phone=$phone&text=hello");
+    if (await canLaunchUrl(uri)) await launchUrl(uri);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final name = doctorDisplayName(data);
+    final photo = data["Profile Photo"] as String?;
+
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 280,
+            backgroundColor: scheme.primary,
+            foregroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              background: photo == null || photo.isEmpty
+                  ? Image.asset("assets/images/emptyprofile.png",
+                      fit: BoxFit.cover)
+                  : Image.network(photo, fit: BoxFit.cover),
             ),
-          );
-        }
-
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              displayPhoto(),
-              Container(
-                color: Colors.white,
-                child: Column(
+          ),
+          SliverPadding(
+            padding: AppSpacing.page,
+            sliver: SliverList.list(
+              children: [
+                Text(name,
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.w700)),
+                const SizedBox(height: AppSpacing.xs),
+                Text(_specialty,
+                    style: TextStyle(fontSize: 16, color: scheme.primary)),
+                const SizedBox(height: AppSpacing.md),
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.local_hospital_outlined,
+                        color: scheme.primary),
+                    title: const Text("Current hospital",
+                        style: TextStyle(fontSize: 13)),
+                    subtitle: Text(_hospital,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500)),
+                  ),
+                ),
+                const SectionHeaderInline("About"),
+                Text(
+                  data["Description"] ?? "",
+                  style: TextStyle(
+                      fontSize: 15,
+                      height: 1.5,
+                      color: scheme.onSurfaceVariant),
+                ),
+                const SectionHeaderInline("Contact"),
+                Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Current Hospital: ",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            snapshot.data!.get("Current Hospital"),
-                            style: TextStyle(
-                              fontSize: 17,
-                            ),
-                          ),
-                        ],
+                    Expanded(
+                      child: _ContactButton(
+                        icon: const Icon(Icons.phone_outlined),
+                        label: "Call",
+                        onTap: () => launchUrl(Uri.parse("tel:$_phone")),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          right: 30, left: 30, top: 20, bottom: 20),
-                      child: Text(
-                        doctorDescription,
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
+                    const SizedBox(width: AppSpacing.sm + 4),
+                    Expanded(
+                      child: _ContactButton(
+                        icon: const Icon(Icons.email_outlined),
+                        label: "Email",
+                        onTap: () => launchUrl(Uri.parse("mailto:$_email")),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: SizedBox(
-                        child: ElevatedButton(
-                          onPressed: (() => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => BookingsPage(
-                                        snapshot.data!.get("Current Hospital"),
-                                        doctorName,
-                                        doctorid,
-                                        snapshot.data!.get("specialty"))),
-                              )),
-                          child: Text("Book Appointment"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
+                    const SizedBox(width: AppSpacing.sm + 4),
+                    Expanded(
+                      child: _ContactButton(
+                        icon: const FaIcon(FontAwesomeIcons.whatsapp,
+                            color: Color(0xFF25D366)),
+                        label: "WhatsApp",
+                        onTap: _openWhatsApp,
                       ),
                     ),
-                    Text(
-                      "Contacts:",
-                      style: TextStyle(
-                          fontSize: 18,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 60),
-                      child: ListTile(
-                        onTap: ()async{
-                          await launchUrl(Uri.parse("tel://${snapshot.data!.get("Phone Number")}"));
-                          },
-                        leading: Icon(Icons.phone_outlined, color: Colors.teal,),
-                        title: Text(snapshot.data!.get("Phone Number")),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 60),
-                      child: ListTile(
-                        onTap: ()async{
-                          await launchUrl(Uri.parse("mailto:${snapshot.data!.get("Email")}"));
-                        },
-                        leading: Icon(Icons.email_outlined, color: Colors.teal,),
-                        title: Text(snapshot.data!.get("Email")),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 60),
-                      child: InkWell(
-                        onTap: () async {
-                          String phoneNumber =
-                              snapshot.data!.get("Phone Number");
-
-                          if (phoneNumber.startsWith("07")) {
-                            phoneNumber = "+254" + phoneNumber.substring(1);
-                          }
-                          var whatsappUrl = "whatsapp://send?phone=" +
-                              phoneNumber +
-                              "&text=hello";
-
-                          if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
-                            await launchUrl(Uri.parse(whatsappUrl));
-                          }
-                        },
-                        child: ListTile(
-                          leading:  FaIcon(
-                            FontAwesomeIcons.whatsapp,
-                            color: Colors.green,
-                          ),
-                          title: Text(snapshot.data!.get("Phone Number")),
-                        ),
-                      ),
-                    )
                   ],
                 ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: AppSpacing.page,
+          child: FilledButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BookingsPage(
+                  address: _hospital,
+                  doctorName: name,
+                  doctorUid: doctorId,
+                  doctorSpecialty: _specialty,
+                ),
               ),
+            ),
+            child: const Text("Book Appointment"),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ContactButton extends StatelessWidget {
+  final Widget icon;
+  final String label;
+  final VoidCallback onTap;
+  const _ContactButton(
+      {required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          child: Column(
+            children: [
+              IconTheme(
+                data:
+                    IconThemeData(color: Theme.of(context).colorScheme.primary),
+                child: icon,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(label,
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600)),
             ],
           ),
-        );
-      });
+        ),
+      ),
+    );
+  }
 }

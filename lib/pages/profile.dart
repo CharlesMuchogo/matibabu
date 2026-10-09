@@ -1,388 +1,256 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:matibabu/GlobalComponents/restapi.dart';
-import 'package:matibabu/pages/updatedetails.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:matibabu/GlobalComponents/authenticationservice.dart';
+import 'package:matibabu/pages/updatedetails.dart';
+import 'package:matibabu/theme/app_theme.dart';
+import 'package:matibabu/widgets/common.dart';
+import 'package:provider/provider.dart';
 
-class profile extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
-  State<profile> createState() => _profileState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _profileState extends State<profile> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class _ProfilePageState extends State<ProfilePage> {
+  final String _uid = FirebaseAuth.instance.currentUser!.uid;
+  bool _uploading = false;
 
-  RestApi info = RestApi();
+  Future<void> _pickImage(String imageName, ImageSource source) async {
+    final picture = await ImagePicker().pickImage(source: source);
+    if (picture == null) return;
 
-  bool isSwitched = false;
-
-  var textValue = 'Switch is OFF';
-
-  var imageFile;
-
-  var imageUrl;
-
-  _pickImage(String imagename, ImageSource source) async {
-    var pictureFile =
-        await ImagePicker().pickImage(source: source);
-
-    final firebasestorage = FirebaseStorage.instance;
-
-    if (pictureFile!.path.isNotEmpty) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          });
-      var croppedImage = await ImageCropper().cropImage(
-        sourcePath: pictureFile.path,
-        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-        uiSettings: [
-          AndroidUiSettings(
-              toolbarColor: Colors.teal,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false)
-        ],
-        compressQuality: 100,
-        maxHeight: 700,
-        maxWidth: 700,
-        compressFormat: ImageCompressFormat.jpg,
-      );
-      setState(() {
-        imageFile = File(croppedImage!.path);
-      });
-      //Upload to Firebase
-      var snapshot = await firebasestorage
-          .ref()
-          .child('images/{$imagename}')
-          .putFile(imageFile);
-      var downloadUrl = await snapshot.ref.getDownloadURL();
-      setState(() {
-        imageUrl = downloadUrl;
-      });
-      FirebaseFirestore.instance
-          .collection("Patient")
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .update({"Profile Photo": imageUrl});
-
-      Navigator.pop(context);
-    } else {
-      print('No Image Path Received');
-    }
-  }
-
-  Widget displayImage(String profileUrl) {
-    return CircleAvatar(
-      backgroundImage: NetworkImage(profileUrl),
-      radius: 80, //Image.file(imageFile),
-      //radius: 70,
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: picture.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      compressQuality: 100,
+      maxHeight: 700,
+      maxWidth: 700,
+      compressFormat: ImageCompressFormat.jpg,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: "Crop photo",
+          toolbarColor: AppColors.seed,
+          toolbarWidgetColor: Colors.white,
+          lockAspectRatio: true,
+        ),
+        IOSUiSettings(title: "Crop photo", aspectRatioLockEnabled: true),
+      ],
     );
-  }
+    if (cropped == null) return;
 
-  Future imagepickerdialogue(BuildContext context, String imageName) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Choose the image source"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context)
-                        .pop(_pickImage(imageName, ImageSource.gallery));
-                  },
-                  child: Text("Gallery"),
-                ),
-                Padding(padding: EdgeInsets.all(8)),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context)
-                        .pop(_pickImage(imageName, ImageSource.camera));
-                  },
-                  child: Text("Camera"),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  canceldialogue(BuildContext context) async {
-    return await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Do you want to Logout?"),
-            actions: [
-              MaterialButton(
-                onPressed: null,
-                child: Text("cancel"),
-              )
-            ],
-          );
-        });
-  }
-
-  void toggleSwitch(bool value) {
-    if (isSwitched == false) {
-      setState(() {
-        isSwitched = true;
-      });
-    } else {
-      setState(() {
-        isSwitched = false;
-      });
-    }
-  }
-
-  signOut() async {
+    setState(() => _uploading = true);
     try {
-      _auth.signOut();
-    } on FirebaseAuth catch (e) {
-      print(e);
+      final upload = await FirebaseStorage.instance
+          .ref()
+          .child('images/{$imageName}')
+          .putFile(File(cropped.path));
+      final url = await upload.ref.getDownloadURL();
+      await FirebaseFirestore.instance
+          .collection("Patient")
+          .doc(_uid)
+          .update({"Profile Photo": url});
+    } on FirebaseException catch (e) {
+      if (mounted) {
+        showMessageDialog(context, "Upload failed", e.message ?? e.code);
+      }
+    } finally {
+      if (mounted) setState(() => _uploading = false);
     }
   }
 
-  Widget profilepictureview(String url) {
-    return Image.network(url);
+  void _chooseImageSource(String imageName) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text("Choose from gallery"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(imageName, ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text("Take a photo"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(imageName, ImageSource.camera);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _logout() async {
+    final ok = await confirmDialog(
+      context,
+      title: "Log out?",
+      confirmLabel: "Log out",
+      destructive: true,
+    );
+    if (ok && mounted) await context.read<AuthenticationService>().signOut();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Profile"),
-        centerTitle: true,
-      ),
-      body: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection("Patient")
-              .doc(FirebaseAuth.instance.currentUser?.uid)
-              .snapshots(),
-          builder: (BuildContext context,
-              AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+      appBar: AppBar(title: const Text("Profile")),
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance
+            .collection("Patient")
+            .doc(_uid)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return const Center(child: ErrorView());
+          final data = snapshot.data?.data();
+          if (data == null) return const LoadingView();
 
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 25),
-                    SizedBox(
-                      width: 25,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                backgroundColor: Colors.grey[600],
-                                content: profilepictureview(
-                                    snapshot.data?.get("Profile Photo")),
-                              );
-                            });
-                      },
-                      child: Stack(
+          final scheme = Theme.of(context).colorScheme;
+          final email = data["Email"] ?? "";
+
+          return ListView(
+            padding: AppSpacing.page,
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Column(
+                    children: [
+                      Stack(
                         children: [
-                          displayImage(snapshot.data?.get("Profile Photo")),
-                          Container(
-                            margin: EdgeInsets.only(
-                                left: MediaQuery.of(context).size.width * 0.28,
-                                top:
-                                    MediaQuery.of(context).size.height * 0.125),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.teal,
-                              radius: 25,
+                          GestureDetector(
+                            onTap: () => _viewPhoto(data["Profile Photo"]),
+                            child: Avatar(data["Profile Photo"], radius: 52),
+                          ),
+                          if (_uploading)
+                            const Positioned.fill(
+                              child: CircleAvatar(
+                                backgroundColor: Colors.black38,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white),
+                              ),
+                            ),
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Material(
+                              color: scheme.primary,
+                              shape: const CircleBorder(
+                                  side: BorderSide(
+                                      color: Colors.white, width: 3)),
                               child: InkWell(
-                                onTap: () {
-                                  imagepickerdialogue(
-                                      context, snapshot.data?.get("Email"));
-                                },
-                                child: Icon(
-                                  Icons.camera_alt_outlined,
-                                  size: 25,
-                                  color: Colors.white,
+                                customBorder: const CircleBorder(),
+                                onTap: _uploading
+                                    ? null
+                                    : () => _chooseImageSource(email),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(AppSpacing.sm),
+                                  child: Icon(Icons.camera_alt_outlined,
+                                      size: 18, color: Colors.white),
                                 ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          snapshot.data?.get("First Name"),
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.02,
-                        ),
-                        Text(
-                          snapshot.data?.get("Last Name"),
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Text(
-                      "User Information",
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.teal,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Divider(
-                      color: Colors.black,
-                      thickness: 1,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[200],
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        "${data["First Name"] ?? ""} ${data["Last Name"] ?? ""}",
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w700),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => UpdateDetails(
-                              FirebaseAuth.instance.currentUser!.uid,
-                              snapshot.data?.get("First Name"),
-                              snapshot.data?.get("Last Name"),
-                              snapshot.data?.get("Phone Number"),
-                              snapshot.data?.get("Address"),
-                            ),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        "update your details",
-                        style: TextStyle(color: Colors.black),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(email,
+                          style: TextStyle(color: scheme.onSurfaceVariant)),
+                    ],
+                  ),
+                ),
+              ),
+              SectionHeaderInline(
+                "Personal information",
+                action: TextButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => UpdateDetails(
+                        userId: _uid,
+                        firstName: data["First Name"] ?? "",
+                        lastName: data["Last Name"] ?? "",
+                        phoneNumber: data["Phone Number"] ?? "",
+                        address: data["Address"] ?? "",
                       ),
                     ),
-                    UserInfo("Email", snapshot.data?.get("Email"),
-                        Icons.email_outlined, context),
-                    UserInfo("Address", snapshot.data?.get("Address"),
-                        Icons.location_on_outlined, context),
-                    UserInfo("Phone Number", snapshot.data?.get("Phone Number"),
-                        Icons.phone, context),
-                    Text(
-                      "User Settings",
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.teal,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Divider(
-                      color: Colors.black,
-                      thickness: 1,
-                    ),
-                    // ListTile(
-                    //   leading: Icon(
-                    //     Icons.dark_mode,
-                    //     size: 30,
-                    //   ),
-                    //   title: Text('Dark Mode'),
-                    //   trailing: Switch(
-                    //     onChanged: toggleSwitch,
-                    //     value: isSwitched,
-                    //     activeColor: Colors.black,
-                    //     activeTrackColor: Colors.black54,
-                    //     inactiveThumbColor: Colors.white54,
-                    //     inactiveTrackColor: Colors.white,
-                    //   ),
-                    // ),
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text("Do you want to Logout?"),
-                              actions: [
-                                MaterialButton(
-                                  elevation: 5,
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text(
-                                    "No",
-                                    style: TextStyle(
-                                        color: Colors.teal, fontSize: 18),
-                                  ),
-                                ),
-                                MaterialButton(
-                                  elevation: 5,
-                                  onPressed: () {
-                                    Navigator.of(context).pop(signOut());
-                                  },
-                                  child: Text(
-                                    "Yes",
-                                    style: TextStyle(
-                                        color: Colors.red, fontSize: 18),
-                                  ),
-                                )
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: ListTile(
-                        title: Text('Logout'),
-                        leading: Icon(
-                          Icons.logout_outlined,
-                          color: Colors.black,
-                          size: 30,
-                        ),
-                      ),
-                    ),
+                  ),
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  label: const Text("Edit"),
+                ),
+              ),
+              Card(
+                child: Column(
+                  children: [
+                    _infoTile(Icons.email_outlined, "Email", email),
+                    const Divider(height: 1, indent: AppSpacing.md),
+                    _infoTile(Icons.phone_outlined, "Phone number",
+                        data["Phone Number"] ?? ""),
+                    const Divider(height: 1, indent: AppSpacing.md),
+                    _infoTile(Icons.location_on_outlined, "Address",
+                        data["Address"] ?? ""),
                   ],
                 ),
               ),
-            );
-          }),
+              const SectionHeaderInline("Account"),
+              Card(
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(
+                  onTap: _logout,
+                  leading: const Icon(Icons.logout_rounded,
+                      color: AppColors.cancelled),
+                  title: const Text("Log out",
+                      style: TextStyle(color: AppColors.cancelled)),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
-}
 
-Widget UserInfo(
-    String title, String subTitle, IconData icondata, BuildContext context) {
-  return Material(
-    color: Colors.transparent,
-    child: ListTile(
-      leading: Icon(icondata),
-      title: Text(title),
-      subtitle: Text(subTitle),
-    ),
-  );
+  void _viewPhoto(String? url) {
+    if (url == null || url.isEmpty) return;
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        clipBehavior: Clip.antiAlias,
+        child: Image.network(url, fit: BoxFit.cover),
+      ),
+    );
+  }
+
+  Widget _infoTile(IconData icon, String label, String value) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(label, style: const TextStyle(fontSize: 13)),
+      subtitle: Text(value.isEmpty ? "—" : value,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+    );
+  }
 }

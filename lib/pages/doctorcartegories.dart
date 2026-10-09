@@ -1,92 +1,62 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:matibabu/pages/doctorcategoriesexpanded.dart';
+import 'package:matibabu/theme/app_theme.dart';
+import 'package:matibabu/widgets/common.dart';
 
 class DoctorCartegories extends StatelessWidget {
-  const DoctorCartegories({Key? key}) : super(key: key);
+  const DoctorCartegories({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Doctor Categories"),
-        centerTitle: true,
-      ),
-      body: StreamBuilder(
+      appBar: AppBar(title: const Text("Doctor Categories")),
+      body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection("Doctor Categoty")
             .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return Container(
-              height: 200,
-              width: 150,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          if (snapshot.hasError) {
-            return Text("An error occured. please try again later");
-          }
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return const Center(child: ErrorView());
+          if (!snapshot.hasData) return const LoadingView();
 
-          return SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: ListView.builder(
-                    itemCount: snapshot.data!.size,
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (context, index) => Container(
-                      height: 90,
-                      margin: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
-                        ),
-                        color: Color.fromRGBO(245, 242, 242, 20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey,
-                            offset: Offset(0.0, .0), //(x,y)
-                            blurRadius: 6.0,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: ListTile(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DoctorCategoriesExpanded(
-                                    category: snapshot.data!.docs[index].id,
-                                  ),
-                                ),
-                              ); // navigate to App
-                            },
-                            leading: CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  snapshot.data!.docs[index]["DisplayPhoto"]),
-                              radius: 35,
-                            ),
-                            title: Text(snapshot.data!.docs[index].id),
-                            trailing: Icon(
-                              Icons.arrow_forward_ios_outlined,
-                              color: Colors.teal,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+          final docs = snapshot.data!.docs;
+          return GridView.builder(
+            padding: AppSpacing.page,
+            itemCount: docs.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: AppSpacing.sm + 4,
+              crossAxisSpacing: AppSpacing.sm + 4,
+              childAspectRatio: 1.15,
+            ),
+            itemBuilder: (context, index) => Card(
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        DoctorCategoriesExpanded(category: docs[index].id),
                   ),
                 ),
-              ],
+                child: Padding(
+                  padding: AppSpacing.card,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Avatar(docs[index]["DisplayPhoto"], radius: 30),
+                      const SizedBox(height: AppSpacing.sm + 4),
+                      Text(
+                        docs[index].id,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           );
         },

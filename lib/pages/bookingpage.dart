@@ -1,240 +1,197 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 import 'package:matibabu/GlobalComponents/restapi.dart';
+import 'package:matibabu/theme/app_theme.dart';
+import 'package:matibabu/widgets/common.dart';
+
+const List<String> _doctorSchedule = [
+  "08:00 AM",
+  "08:30 AM",
+  "09:00 AM",
+  "09:30 AM",
+  "10:00 AM",
+  "10:30 AM",
+  "11:00 AM",
+  "11:30 AM",
+  "12:00 PM",
+  "12:30 PM",
+  "2:00 PM",
+  "2:30 PM",
+  "3:00 PM",
+  "3:30 PM",
+  "4:00 PM",
+];
 
 class BookingsPage extends StatefulWidget {
-  @override
-  State<BookingsPage> createState() => _BookingsPageState();
   final String address;
   final String doctorName;
   final String doctorUid;
-  final String doctorspecialty;
+  final String doctorSpecialty;
 
-  const BookingsPage(
-    this.address,
-    this.doctorName,
-    this.doctorUid,
-    this.doctorspecialty,
-  );
+  const BookingsPage({
+    super.key,
+    required this.address,
+    required this.doctorName,
+    required this.doctorUid,
+    required this.doctorSpecialty,
+  });
+
+  @override
+  State<BookingsPage> createState() => _BookingsPageState();
 }
 
-String _selectedDate = "";
-String formatedTime = "";
-String timeOfAppointment = "";
-
 class _BookingsPageState extends State<BookingsPage> {
-  Future<void> _openDatePicker(BuildContext context) async {
-    DateTime initialdate = DateTime.now();
+  String _selectedDate = "";
+  String _selectedTime = "";
+  bool _booking = false;
 
-    if (DateTime.now().weekday == 6) {
-      setState(() {
-        initialdate = initialdate.add(Duration(days: 2));
-      });
-    }
-    if (DateTime.now().weekday == 7) {
-      setState(() {
-        initialdate = initialdate.add(Duration(days: 1));
-      });
+  bool _isWeekend(DateTime d) =>
+      d.weekday == DateTime.saturday || d.weekday == DateTime.sunday;
+
+  Future<void> _openDatePicker() async {
+    var initial = DateTime.now();
+    while (_isWeekend(initial)) {
+      initial = initial.add(const Duration(days: 1));
     }
 
-    final DateTime? date = await showDatePicker(
+    final date = await showDatePicker(
       context: context,
-      selectableDayPredicate: (DateTime val) =>
-          val.weekday == 6 || val.weekday == 7 ? false : true,
-      initialDate: initialdate,
+      selectableDayPredicate: (d) => !_isWeekend(d),
+      initialDate: initial,
       firstDate: DateTime.now(),
-      helpText: "Select date of appointment",
       lastDate: DateTime(DateTime.now().year + 5),
+      helpText: "Select date of appointment",
     );
 
     if (date != null) {
-      setState(
-        () {
-          _selectedDate = DateFormat.yMMMd("en_US").format(date).toString();
-        },
+      setState(() {
+        _selectedDate = DateFormat.yMMMd("en_US").format(date);
+        _selectedTime = "";
+      });
+    }
+  }
+
+  Future<void> _book() async {
+    if (_selectedDate.isEmpty || _selectedTime.isEmpty) {
+      showMessageDialog(
+          context, "Missing details", "Pick both a date and a time.");
+      return;
+    }
+
+    setState(() => _booking = true);
+    try {
+      await RestApi().bookAppointment(
+        widget.doctorSpecialty,
+        _selectedTime,
+        _selectedDate,
+        widget.address,
+        widget.doctorName,
+        widget.doctorUid,
       );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Your appointment was booked!")),
+      );
+      Navigator.pop(context);
+    } on FirebaseException catch (e) {
+      if (!mounted) return;
+      setState(() => _booking = false);
+      showMessageDialog(context, "Booking failed", e.message ?? e.code);
     }
-    //return _selectedDate;
-  }
-
-  TimeOfDay selectedTime = TimeOfDay.now();
-
-  Widget GetAppointmentTime(
-      String doctorUid, BuildContext context, String date) {
-    List appointmenttime = [];
-    List availableAppointments = [];
-    List doctorSchedule = [
-      "08:00 AM",
-      "08:30 AM",
-      "09:00 AM",
-      "09:30 AM",
-      "10:00 AM",
-      "10:30 AM",
-      "11:00 AM",
-      "11:30 AM",
-      "12:00 PM",
-      "12:30 PM",
-      "2:00 PM",
-      "2:30 PM",
-      "3:00 PM",
-      "3:30 PM",
-      "4:00 PM",
-    ];
-
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection("Doctor")
-            .doc(doctorUid)
-            .collection("My appointments")
-            .where("Date", isEqualTo: date)
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text("Oops, an error occured. please try again"),
-            );
-          }
-
-          for (int i = 0; i < snapshot.data!.size; i++) {
-            appointmenttime.add(snapshot.data!.docs[i]["Time"]);
-          }
-          availableAppointments.clear();
-          for (int i = 0; i < doctorSchedule.length; i++) {
-            if (!appointmenttime.contains(doctorSchedule[i])) {
-              availableAppointments.add(doctorSchedule[i]);
-            }
-          }
-
-          return InkWell(
-            onTap: () {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return GridView.count(
-                      mainAxisSpacing: 1,
-                      crossAxisCount: 4,
-                      children:
-                          List.generate(availableAppointments.length, (index) {
-                        return Center(
-                          child: selectTime(availableAppointments[index]),
-                        );
-                      }),
-                    );
-                  });
-            },
-            child: ListTile(
-              leading: Icon(Icons.watch_later_outlined),
-              title: Text("Select time of the Appointment"),
-              trailing: Text(
-                timeOfAppointment,
-                style: TextStyle(color: Colors.teal),
-              ),
-            ),
-          );
-        });
-  }
-
-  Widget selectTime(String time) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 0, right: 0),
-      child: ElevatedButton(
-          onPressed: () {
-            setState(() {
-              timeOfAppointment = time;
-            });
-          },
-          child: Text(time)),
-    );
-  }
-
-  book() {
-    if ((timeOfAppointment.isEmpty) || (_selectedDate.isEmpty)) {
-      return showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text("Error!"),
-              content: Text("Fill in all details"),
-              actions: [
-                MaterialButton(
-                  child: Text("Okay"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            );
-          });
-    } else {
-      RestApi restObject = RestApi();
-      restObject.bookAppointment(
-          widget.doctorspecialty,
-          timeOfAppointment,
-          _selectedDate,
-          widget.address,
-          widget.doctorName,
-          widget.doctorUid,
-          context);
-    }
-    setState(() {
-      _selectedDate = "";
-      timeOfAppointment = "";
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Book An Appointment"),
-        backgroundColor: Colors.teal,
-        centerTitle: true,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+      appBar: AppBar(title: const Text("Book Appointment")),
+      body: ListView(
+        padding: AppSpacing.page,
         children: [
-          Center(
-            child: SizedBox(
-              height: (MediaQuery.of(context).size.height * 0.15),
-              child: Center(
-                child: Text(
-                  "Pick a date and time of your appointment",
-                  style: TextStyle(
-                      color: Colors.teal,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () => _openDatePicker(context),
+          DoctorTile(
+              name: widget.doctorName, specialty: widget.doctorSpecialty),
+          const SizedBox(height: AppSpacing.lg),
+          Text("Date",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: AppSpacing.sm),
+          Card(
+            clipBehavior: Clip.antiAlias,
             child: ListTile(
-              leading: Icon(Icons.calendar_month_outlined),
-              title: Text("Select date of the Appointment"),
-              trailing: Text(
-                _selectedDate,
-                style: TextStyle(color: Colors.teal),
-              ),
+              onTap: _openDatePicker,
+              leading:
+                  Icon(Icons.calendar_today_outlined, color: scheme.primary),
+              title:
+                  Text(_selectedDate.isEmpty ? "Select a date" : _selectedDate),
+              subtitle: const Text("Monday to Friday"),
+              trailing: const Icon(Icons.chevron_right_rounded),
             ),
           ),
-          GetAppointmentTime(widget.doctorUid, context, _selectedDate),
-          ElevatedButton(
-            onPressed: book,
-            child: Text("Book Appointment"),
-          )
+          const SizedBox(height: AppSpacing.lg),
+          Text("Time",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: AppSpacing.sm),
+          _selectedDate.isEmpty
+              ? Text("Pick a date to see available times.",
+                  style: TextStyle(color: scheme.onSurfaceVariant))
+              : _timeSlots(),
         ],
       ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: AppSpacing.page,
+          child: LoadingButton(
+              label: "Book Appointment", loading: _booking, onPressed: _book),
+        ),
+      ),
+    );
+  }
+
+  Widget _timeSlots() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection("Doctor")
+          .doc(widget.doctorUid)
+          .collection("My appointments")
+          .where("Date", isEqualTo: _selectedDate)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return const ErrorView();
+        if (!snapshot.hasData) return const LoadingView(height: 120);
+
+        final taken = snapshot.data!.docs.map((d) => d["Time"]).toSet();
+        final available =
+            _doctorSchedule.where((t) => !taken.contains(t)).toList();
+
+        if (available.isEmpty) {
+          return const EmptyState(
+            icon: Icons.event_busy_outlined,
+            title: "Fully booked",
+            message: "Try another date.",
+          );
+        }
+
+        return Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
+          children: [
+            for (final t in available)
+              ChoiceChip(
+                label: Text(t),
+                selected: _selectedTime == t,
+                showCheckmark: false,
+                onSelected: (_) => setState(() => _selectedTime = t),
+              ),
+          ],
+        );
+      },
     );
   }
 }

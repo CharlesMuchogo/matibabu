@@ -1,10 +1,9 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:matibabu/GlobalComponents/authenticationservice.dart';
 import 'package:matibabu/GlobalComponents/autheticationwrapper.dart';
+import 'package:matibabu/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -16,20 +15,17 @@ Future<void> main() async {
         Provider<AuthenticationService>(
           create: (_) => AuthenticationService(FirebaseAuth.instance),
         ),
-        StreamProvider(
+        StreamProvider<User?>(
           create: (context) =>
               context.read<AuthenticationService>().authstateChanges,
           initialData: null,
         )
       ],
       child: MaterialApp(
+        title: "Matibabu",
         debugShowCheckedModeBanner: false,
-        home: AuthenticationWrapper(),
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.teal,
-          ),
-        ),
+        theme: AppTheme.light(),
+        home: const AuthenticationWrapper(),
       ),
     ),
   );

@@ -1,168 +1,151 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_key_in_widget_constructors
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:matibabu/models/appointment.dart';
 import 'package:matibabu/pages/bookingpage.dart';
+import 'package:matibabu/theme/app_theme.dart';
+import 'package:matibabu/widgets/common.dart';
 
 class AppointmentPage extends StatelessWidget {
-  final String patientId;
-  final String doctorUid;
-  final String dateOfAppointment;
-  final String typeOfConsultation;
-  final String timeOfAppointment;
-  final String addressOfHospital;
-  final String doctorName;
-  final String status;
+  final Appointment appointment;
 
-  const AppointmentPage(
-    this.patientId,
-    this.doctorUid,
-    this.dateOfAppointment,
-    this.typeOfConsultation,
-    this.timeOfAppointment,
-    this.addressOfHospital,
-    this.doctorName,
-    this.status,
-  );
+  const AppointmentPage(this.appointment, {super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    cancelappointment() {
-      if (status == "Cancelled") {
-        FirebaseFirestore.instance
-            .collection("Patient")
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection("My appointments")
-            .doc(patientId)
-            .delete();
+  Future<void> _remove() async {
+    final firestore = FirebaseFirestore.instance;
+    await firestore
+        .collection("Patient")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("My appointments")
+        .doc(appointment.id)
+        .delete();
 
-        print("deleted successfuly");
-      } else {
-        FirebaseFirestore.instance
-            .collection("Patient")
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection("My appointments")
-            .doc(patientId)
-            .delete();
-
-        FirebaseFirestore.instance
-            .collection("Doctor")
-            .doc(doctorUid)
-            .collection("My appointments")
-            .doc(patientId)
-            .delete();
-      }
+    // A cancelled appointment was already released by the doctor.
+    if (!appointment.isCancelled) {
+      await firestore
+          .collection("Doctor")
+          .doc(appointment.doctorId)
+          .collection("My appointments")
+          .doc(appointment.id)
+          .delete();
     }
+  }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Appointment details"),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            ListTile(
-              leading: Icon(Icons.calendar_month_outlined),
-              title: Text(dateOfAppointment),
-            ),
-            ListTile(
-              leading: Icon(Icons.access_time),
-              title: Text(timeOfAppointment),
-            ),
-            ListTile(
-              leading: Icon(Icons.location_on),
-              title: Text(
-                addressOfHospital,
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.medical_services),
-              title: Text(
-                typeOfConsultation,
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.person_outline),
-              title: Text(
-                doctorName,
-              ),
-              //should lead user to the doctors page of specific doctor
-            ),
-            status == "Cancelled"
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      cancelAppointment(
-                          "Delete appointment", cancelappointment, context),
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => BookingsPage(
-                                    typeOfConsultation,
-                                    addressOfHospital,
-                                    doctorName,
-                                    doctorUid),
-                              ),
-                            );
-                          },
-                          child: Text("Reschedule appointment"))
-                    ],
-                  )
-                : cancelAppointment(
-                    "Cancel appointment", cancelappointment, context),
-            status == "Confirmed" ? Container() : Container(),
-          ],
+  Future<void> _confirmRemove(BuildContext context) async {
+    final cancelled = appointment.isCancelled;
+    final ok = await confirmDialog(
+      context,
+      title: cancelled ? "Delete appointment?" : "Cancel appointment?",
+      message: cancelled
+          ? "This removes it from your history."
+          : "Your slot with ${appointment.doctorName} will be released.",
+      confirmLabel: cancelled ? "Delete" : "Cancel appointment",
+      destructive: true,
+    );
+    if (!ok) return;
+    await _remove();
+    if (context.mounted) Navigator.pop(context);
+  }
+
+  void _reschedule(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BookingsPage(
+          address: appointment.address,
+          doctorName: appointment.doctorName,
+          doctorUid: appointment.doctorId,
+          doctorSpecialty: appointment.consultation,
         ),
       ),
     );
   }
-}
 
-Widget cancelAppointment(
-    String name, Function cancelappointment, BuildContext context) {
-  return ElevatedButton(
-    style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-    onPressed: () {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Do you want to cancel the appointment?"),
-            actions: [
-              MaterialButton(
-                elevation: 5,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  "No",
-                  style: TextStyle(color: Colors.teal, fontSize: 18),
-                ),
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final canModify = appointment.isCancelled || appointment.isUpcoming;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Appointment")),
+      body: ListView(
+        padding: AppSpacing.page,
+        children: [
+          Card(
+            child: Padding(
+              padding: AppSpacing.card,
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: scheme.primaryContainer,
+                    child: Icon(Icons.person_rounded,
+                        color: scheme.primary, size: 28),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(appointment.doctorName,
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 2),
+                        Text(appointment.consultation,
+                            style: TextStyle(color: scheme.primary)),
+                      ],
+                    ),
+                  ),
+                  StatusChip(appointment.displayStatus),
+                ],
               ),
-              MaterialButton(
-                elevation: 5,
-                onPressed: () {
-                  Navigator.of(context).pop(cancelappointment());
-                },
-                child: Text(
-                  "Yes",
-                  style: TextStyle(color: Colors.red, fontSize: 18),
-                ),
-              )
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Card(
+            child: Column(
+              children: [
+                _detail(
+                    Icons.calendar_today_outlined, "Date", appointment.date),
+                const Divider(height: 1, indent: AppSpacing.md),
+                _detail(Icons.access_time_rounded, "Time", appointment.time),
+                const Divider(height: 1, indent: AppSpacing.md),
+                _detail(Icons.location_on_outlined, "Location",
+                    appointment.address),
+              ],
+            ),
+          ),
+          if (canModify) ...[
+            const SizedBox(height: AppSpacing.lg),
+            if (appointment.isCancelled) ...[
+              FilledButton(
+                onPressed: () => _reschedule(context),
+                child: const Text("Reschedule"),
+              ),
+              const SizedBox(height: AppSpacing.sm + 4),
             ],
-          );
-        },
-      );
-    },
-    child: Text(name),
-  );
+            OutlinedButton(
+              onPressed: () => _confirmRemove(context),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.cancelled,
+                side: const BorderSide(color: AppColors.cancelled),
+              ),
+              child: Text(appointment.isCancelled
+                  ? "Delete appointment"
+                  : "Cancel appointment"),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _detail(IconData icon, String label, String value) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(label, style: const TextStyle(fontSize: 13)),
+      subtitle: Text(value,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+    );
+  }
 }
