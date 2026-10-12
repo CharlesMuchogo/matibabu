@@ -66,7 +66,7 @@ void main() {
       expect(store.tokens, const Tokens(access: 'access', refresh: 'refresh'));
     });
 
-    test('register signs up a patient with their address', () async {
+    test('register signs up a patient without an address', () async {
       respond((_) => FakeResponse(200, session()));
       await AuthRepositoryImpl(api: api, social: social).register(
         const Registration(
@@ -74,7 +74,6 @@ void main() {
           lastName: 'Ient',
           email: 'pat@example.com',
           phoneNumber: '0700',
-          address: 'Nairobi',
           password: 'secret1',
         ),
       );
@@ -83,7 +82,10 @@ void main() {
         adapter.requests.single.data,
         containsPair('user_type', 'patient'),
       );
-      expect(adapter.requests.single.data, containsPair('address', 'Nairobi'));
+      expect(
+        (adapter.requests.single.data as Map).containsKey('address'),
+        isFalse,
+      );
     });
 
     test(

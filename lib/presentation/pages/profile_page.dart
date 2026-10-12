@@ -120,6 +120,18 @@ class _ProfileView extends StatelessWidget {
     );
   }
 
+  Future<void> _editAddress(BuildContext context, String current) async {
+    final bloc = context.read<ProfileBloc>();
+    final address = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => _AddressSheet(initial: current),
+    );
+    if (address == null || address == current) return;
+    bloc.add(ProfileUpdateSubmitted(ProfileUpdate(address: address)));
+  }
+
   Future<void> _logout(BuildContext context) async {
     final ok = await confirmDialog(
       context,
@@ -153,7 +165,7 @@ class _ProfileView extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return ProfileUpdateListener(
-      failureTitle: "Upload failed",
+      failureTitle: "Couldn't update your profile",
       child: Scaffold(
         appBar: AppBar(title: const Text("Profile")),
         body: ListView(
@@ -253,6 +265,8 @@ class _ProfileView extends StatelessWidget {
                     Icons.location_on_outlined,
                     "Address",
                     user.address,
+                    emptyValue: "Add your address",
+                    onTap: () => _editAddress(context, user.address),
                   ),
                 ],
               ),
@@ -279,6 +293,58 @@ class _ProfileView extends StatelessWidget {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AddressSheet extends StatefulWidget {
+  final String initial;
+
+  const _AddressSheet({required this.initial});
+
+  @override
+  State<_AddressSheet> createState() => _AddressSheetState();
+}
+
+class _AddressSheetState extends State<_AddressSheet> {
+  late final _address = TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _address.dispose();
+    super.dispose();
+  }
+
+  void _save() => Navigator.pop(context, _address.text.trim());
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        0,
+        AppSpacing.md,
+        MediaQuery.viewInsetsOf(context).bottom + AppSpacing.md,
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SectionTitle("Your address"),
+            const SizedBox(height: AppSpacing.md),
+            AppTextField(
+              controller: _address,
+              label: "Address",
+              icon: Icons.location_on_outlined,
+              keyboardType: TextInputType.streetAddress,
+              onSubmitted: (_) => _save(),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            FilledButton(onPressed: _save, child: const Text("Save address")),
           ],
         ),
       ),

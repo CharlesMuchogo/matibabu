@@ -21,7 +21,8 @@ class ChatRouter {
     _links ??= AppLinks().uriLinkStream.listen(handleUri, onError: (_) {});
   }
 
-  static String? get activeChatId => _openChats.isEmpty ? null : _openChats.last;
+  static String? get activeChatId =>
+      _openChats.isEmpty ? null : _openChats.last;
 
   static void chatOpened(String chatId) => _openChats.add(chatId);
 

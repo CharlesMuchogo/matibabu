@@ -68,7 +68,9 @@ class FirebaseNotificationRepository implements NotificationRepository {
 
   static String? _chatId(RemoteMessage? message) {
     final chatId = message?.data['chat_id'];
-    return message?.data['type'] == 'chat' && chatId is String && chatId.isNotEmpty
+    return message?.data['type'] == 'chat' &&
+            chatId is String &&
+            chatId.isNotEmpty
         ? chatId
         : null;
   }

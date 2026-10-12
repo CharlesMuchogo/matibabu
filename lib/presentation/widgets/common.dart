@@ -244,18 +244,38 @@ class DetailTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+  final String emptyValue;
+  final VoidCallback? onTap;
 
-  const DetailTile(this.icon, this.label, this.value, {super.key});
+  const DetailTile(
+    this.icon,
+    this.label,
+    this.value, {
+    super.key,
+    this.emptyValue = "—",
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final empty = value.isEmpty;
     return ListTile(
+      onTap: onTap,
       leading: Icon(icon),
       title: Text(label, style: const TextStyle(fontSize: 13)),
       subtitle: Text(
-        value.isEmpty ? "—" : value,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        empty ? emptyValue : value,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: empty && onTap != null
+              ? Theme.of(context).colorScheme.primary
+              : null,
+        ),
       ),
+      trailing: onTap == null
+          ? null
+          : const Icon(Icons.edit_outlined, size: 18),
     );
   }
 }

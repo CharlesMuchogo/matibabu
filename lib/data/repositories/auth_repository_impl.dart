@@ -37,7 +37,6 @@ class AuthRepositoryImpl implements AuthRepository {
         'last_name': registration.lastName.trim(),
         'email': registration.email.trim().toLowerCase(),
         'phone_number': registration.phoneNumber.trim(),
-        'address': registration.address.trim(),
         'password': registration.password,
         'user_type': _userType,
       },

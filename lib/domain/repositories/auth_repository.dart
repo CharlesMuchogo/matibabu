@@ -6,7 +6,6 @@ class Registration extends Equatable {
   final String lastName;
   final String email;
   final String phoneNumber;
-  final String address;
   final String password;
 
   const Registration({
@@ -14,7 +13,6 @@ class Registration extends Equatable {
     required this.lastName,
     required this.email,
     required this.phoneNumber,
-    required this.address,
     required this.password,
   });
 
@@ -24,7 +22,6 @@ class Registration extends Equatable {
     lastName,
     email,
     phoneNumber,
-    address,
     password,
   ];
 }

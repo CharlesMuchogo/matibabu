@@ -5,7 +5,6 @@ import 'package:matibabu/presentation/bloc/auth/auth_bloc.dart';
 import 'package:matibabu/presentation/pages/auth_listener.dart';
 import 'package:matibabu/presentation/theme/app_theme.dart';
 import 'package:matibabu/presentation/widgets/common.dart';
-import 'package:matibabu/presentation/widgets/social_buttons.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -19,7 +18,6 @@ class _SignupPageState extends State<SignupPage> {
   final _lastName = TextEditingController();
   final _email = TextEditingController();
   final _phone = TextEditingController();
-  final _address = TextEditingController();
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
 
@@ -28,7 +26,6 @@ class _SignupPageState extends State<SignupPage> {
     _lastName,
     _email,
     _phone,
-    _address,
     _password,
     _confirmPassword,
   ];
@@ -63,7 +60,6 @@ class _SignupPageState extends State<SignupPage> {
           lastName: _lastName.text,
           email: _email.text,
           phoneNumber: _phone.text,
-          address: _address.text,
           password: _password.text,
         ),
       ),
@@ -109,8 +105,6 @@ class _SignupPageState extends State<SignupPage> {
               subtitle: "Book and track appointments with top specialists.",
             ),
             const SizedBox(height: AppSpacing.xl),
-            const SocialSignInButtons(),
-            const OrDivider(),
             Row(
               children: [
                 Expanded(
@@ -143,12 +137,6 @@ class _SignupPageState extends State<SignupPage> {
               "Phone number",
               Icons.phone_outlined,
               keyboard: TextInputType.phone,
-            ),
-            _field(
-              _address,
-              "Address",
-              Icons.location_on_outlined,
-              keyboard: TextInputType.streetAddress,
             ),
             _field(_password, "Password", Icons.lock_outline, obscure: true),
             _field(

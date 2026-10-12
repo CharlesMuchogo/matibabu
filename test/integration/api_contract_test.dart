@@ -75,11 +75,10 @@ void main() {
           lastName: 'Contract',
           email: 'patient$stamp@example.com',
           phoneNumber: '0700000000',
-          address: 'Nairobi',
           password: 'secret1',
         ),
       );
-      expect(patient.address, 'Nairobi');
+      expect(patient.address, isEmpty);
       expect(await auth.hasSession(), isTrue);
 
       final users = UserRepositoryImpl(api);

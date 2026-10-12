@@ -35,11 +35,10 @@ class _EditProfileViewState extends State<_EditProfileView> {
   late final _firstName = TextEditingController(text: widget.user.firstName);
   late final _lastName = TextEditingController(text: widget.user.lastName);
   late final _phone = TextEditingController(text: widget.user.phoneNumber);
-  late final _address = TextEditingController(text: widget.user.address);
 
   @override
   void dispose() {
-    for (final controller in [_firstName, _lastName, _phone, _address]) {
+    for (final controller in [_firstName, _lastName, _phone]) {
       controller.dispose();
     }
     super.dispose();
@@ -59,7 +58,6 @@ class _EditProfileViewState extends State<_EditProfileView> {
           firstName: _firstName.text,
           lastName: _lastName.text,
           phoneNumber: _phone.text,
-          address: _address.text,
         ),
       ),
     );
@@ -100,13 +98,6 @@ class _EditProfileViewState extends State<_EditProfileView> {
               label: "Phone number",
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            AppTextField(
-              controller: _address,
-              label: "Address",
-              icon: Icons.location_on_outlined,
-              keyboardType: TextInputType.streetAddress,
               onSubmitted: (_) => _save(),
             ),
             const SizedBox(height: AppSpacing.lg),
